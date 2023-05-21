@@ -1,7 +1,9 @@
 from django.contrib import admin
-from .models import student, instructor, employee, qualification
+from django.contrib.auth.admin import UserAdmin
+from .models import Student, Instructor, Employee, Qualification, CustomUser
 
-admin.site.register(student)
-admin.site.register(instructor)
-admin.site.register(employee)
-admin.site.register(qualification)
+admin.site.register(Student)
+admin.site.register(Instructor)
+admin.site.register(Employee)
+admin.site.register(Qualification)
+admin.site.register(CustomUser)
