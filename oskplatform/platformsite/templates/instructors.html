@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+<header class="masthead" style="background-image: url('{% static 'assets/img/vehicles.jpg'%}')">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="site-heading">
+                    <h1>Nasza kadra</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="container px-4 px-lg-5">
+            <div class="row gx-4 gx-lg-5 justify-content-center">
+                <div class="col-md-10 col-lg-8 col-xl-7">
+                    <!-- Post preview-->
+                    {% for x in instructors %}
+                    <div class="post-preview">
+                        <h2 class="post-title">{{ x.0.name }} {{ x.0.surname }}</h2>
+                        <h3 class="post-subtitle">Kwalifikacje: </h3>
+                        {% for q in x.1 %}
+                        <h4 class="post-subtitle">Kategoria {{ q.category }} od {{ q.date_of_achievement|date:"d.m.Y"}}r.</h4>
+                        {% endfor %}
+                    </div>
+                    <!-- Divider-->
+                    <hr class="my-4" />
+
+                    {% endfor %}
+{% endblock %}
