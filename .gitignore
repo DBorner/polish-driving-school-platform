@@ -159,5 +159,5 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-/media/vehicle_photos
-/media/category_photos
+oskplatform/media/vehicle_photos/
+oskplatform/media/category_photos/

@@ -11,7 +11,8 @@ vehicle_type_choices = [
 
 gearbox_type_choices = [
     ('M', 'Manualna'),
-    ('A', 'Automatyczna')
+    ('A', 'Automatyczna'),
+    ('N', 'Nie dotyczy')
 ]
 
 class Vehicle(models.Model):
@@ -21,7 +22,6 @@ class Vehicle(models.Model):
     brand = models.CharField(max_length=50, null=True, blank=True)
     model = models.CharField(max_length=50, null=True, blank=True)
     year_of_production = models.IntegerField(null=True, blank=True)
-    photo = models.ImageField(default='default_vehicle.jpg', upload_to='vehicle_photos')
     gearbox_type = models.CharField(max_length=1, choices=gearbox_type_choices, default='M', null=False)
     is_available = models.BooleanField(default=True)
     

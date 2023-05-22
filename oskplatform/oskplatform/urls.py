@@ -9,5 +9,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('user_info/', user_views.user_info),
     path('category/<str:category_id>/', platform_views.category),
+    path('vehicles/', platform_views.vehicles),
     path('', platform_views.home),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
