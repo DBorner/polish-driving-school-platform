@@ -49,11 +49,14 @@ def instructors(request):
     return HttpResponse(template.render(context, request))
 
 def theorys(request):
-    template = loader.get_template('instructors.html')
-    theorys = TheoryCourse.objects.all().values().filter(start_date__gte=datetime.date.today())
-    for course in theorys:
-        print(get_course_dates(course['id']))
+    template = loader.get_template('theories.html')
+    theories = TheoryCourse.objects.all().values().filter(start_date__gte=datetime.date.today())
+    theories = theories.exclude(start_date__gt=datetime.date.today() + datetime.timedelta(days=30))
+    instructors = Instructor.objects.all().values()
+    data = []
+    for theory in theories:
+        data.append((theory, instructors.get(pk=theory['instructor_id'])))
     context = {
-        'dates': None
+        'theories': data
     }
-    return HttpResponse("test")
+    return HttpResponse(template.render(context, request))
