@@ -35,7 +35,7 @@ class Category(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, null=False)
     is_discount = models.BooleanField(default=False)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    photo = models.ImageField(upload_to='category_photos/', null=True, blank=True)
+    photo = models.ImageField(default='default.jpg')
     is_available = models.BooleanField(default=True)
 
     def __str__(self):
