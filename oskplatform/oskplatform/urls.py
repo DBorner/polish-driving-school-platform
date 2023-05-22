@@ -11,5 +11,6 @@ urlpatterns = [
     path('category/<str:category_id>/', platform_views.category),
     path('vehicles/', platform_views.vehicles),
     path('instructors/', platform_views.instructors),
+    path('theorys/', platform_views.theorys),
     path('', platform_views.home),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

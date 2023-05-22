@@ -1,9 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.template import loader
-from course.models import Category, Vehicle
+from course.models import Category, Vehicle, TheoryCourse
+from course.utils import get_course_dates
 from users.models import Instructor
 from users.utils import get_inctructor_qualifications
+import datetime
 
 
 def home(request):
@@ -45,3 +47,13 @@ def instructors(request):
         'instructors': instructors_qualifications
     }
     return HttpResponse(template.render(context, request))
+
+def theorys(request):
+    template = loader.get_template('instructors.html')
+    theorys = TheoryCourse.objects.all().values().filter(start_date__gte=datetime.date.today())
+    for course in theorys:
+        print(get_course_dates(course['id']))
+    context = {
+        'dates': None
+    }
+    return HttpResponse("test")
