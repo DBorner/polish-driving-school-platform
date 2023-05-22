@@ -21,6 +21,7 @@ class Vehicle(models.Model):
     brand = models.CharField(max_length=50, null=True, blank=True)
     model = models.CharField(max_length=50, null=True, blank=True)
     year_of_production = models.IntegerField(null=True, blank=True)
+    photo = models.ImageField(default='default_vehicle.jpg', upload_to='vehicle_photos')
     gearbox_type = models.CharField(max_length=1, choices=gearbox_type_choices, default='M', null=False)
     is_available = models.BooleanField(default=True)
     
@@ -34,7 +35,7 @@ class Category(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2, null=False)
     is_discount = models.BooleanField(default=False)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    photo = models.ImageField(default='default.jpg')
+    photo = models.ImageField(default='default_category.jpg', upload_to='category_photos')
     is_available = models.BooleanField(default=True)
 
     def __str__(self):
