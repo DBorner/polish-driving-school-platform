@@ -58,7 +58,7 @@ class Course(models.Model):
     instructor = models.ForeignKey('users.instructor', on_delete=models.CASCADE, null=True, blank=True)
     
     def __str__(self):
-        return f'{self.id} - {self.pkk_number} ({self.course_status})'
+        return f'{self.pkk_number} ({self.category.symbol})'
     
 theory_type_choices = [
     ('T', 'Tygodniowy'),

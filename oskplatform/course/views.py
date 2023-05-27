@@ -1,17 +1,30 @@
-from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
 from password_generator import PasswordGenerator
-
-from users.models import CustomUserMenager, CustomUser, Student
+from users.models import CustomUser, Student
+from course.models import PracticalLesson, Course
+from django.utils import timezone
 
 @login_required(login_url='/login')
 def panel_view(request):
     template = loader.get_template('panel.html')
     return HttpResponse(template.render({}, request))
+
+@login_required(login_url='/login')
+def upcoming_lessons_view(request):
+    user_courses = Course.objects.filter(student=request.user.student, course_status='R')
+    all_practical_lessons = []
+    for course in user_courses:
+        practical_lessons = PracticalLesson.objects.filter(course=course, date__gte=timezone.now())
+        for lesson in practical_lessons:
+            all_practical_lessons.append(lesson)
+    all_practical_lessons.sort(key=lambda x: x.date)
+    template = loader.get_template('upcoming_lessons.html')
+    context = {
+        'lessons': all_practical_lessons
+    }
+    return HttpResponse(template.render(context, request))
 
 @login_required(login_url='/login')
 def register_student_view(request):
