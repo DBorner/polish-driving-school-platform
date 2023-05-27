@@ -8,7 +8,9 @@
     <section class="py-8">
       <div class="container">
         <div class="p-6 bg-white rounded shadow">
-            <h3> Kategoria {{course.category}} - Numer PKK: {{course.pkk_number}}</h3>
+          <div class="pt-4 pb-5 px-6 border-bottom border-secondary-light">
+            <h4> Kategoria {{course.category}} - Numer PKK: {{course.pkk_number}}</h4>
+          </div>
           <div class="mb-5">
             
           </div>
@@ -80,7 +82,7 @@
               {% for lesson in lessons %}
                 <tr>
                   <td class="py-5 px-6">{{lesson.date|date:"d.m.Y"}}</td>
-                  <td class="py-5 px-6">{{lesson.start_time|time:"G:s"}}</td>
+                  <td class="py-5 px-6">{{lesson.start_time|time:"G:i"}}</td>
                   <td class="py-5 px-6">{{lesson.instructor.full_name}}</td>
                   <td class="py-5 px-6">
                     {% if lesson.is_cancelled %}

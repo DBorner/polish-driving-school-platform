@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import date
+from datetime import date, datetime
 
 vehicle_type_choices = [
     ('SO', 'Samochód osobowy'),
@@ -94,3 +94,20 @@ class PracticalLesson(models.Model):
     @property
     def has_already_happened(self):
         return self.date < date.today() 
+    
+    @property
+    def is_paid(self):
+        return self.cost is not None
+    
+    @property
+    def get_end_time(self):
+        hour = (self.start_time.hour + self.num_of_hours) % 24
+        return datetime(year=self.date.year, month=self.date.month, day=self.date.day, hour=hour, minute=self.start_time.minute)
+    
+    @property
+    def is_number_of_km_filled(self):
+        return self.num_of_km is not None
+    
+    @property
+    def is_vehicle_filled(self):
+        return self.vehicle is not None

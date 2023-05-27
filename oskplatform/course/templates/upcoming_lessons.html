@@ -24,7 +24,7 @@
                   <tr>
                     <td class="py-5 px-6">{{lesson.course}}</td>
                     <td class="py-5 px-6">{{lesson.date|date:"d.m.Y"}}</td>
-                    <td class="py-5 px-6">{{lesson.start_time|time:"G:s"}}</td>
+                    <td class="py-5 px-6">{{lesson.start_time|time:"G:i"}}</td>
                     <td class="py-5 px-6">{{lesson.instructor.full_name}}</td>
                     <td class="py-5 px-6">
                         {% if lesson.is_cancelled %}

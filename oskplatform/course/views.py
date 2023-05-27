@@ -11,6 +11,8 @@ from django.shortcuts import redirect
 
 @login_required(login_url='/login')
 def panel_view(request):
+    if request.user.permissions_type in {'S', 'I'}:
+        return redirect('/upcoming_lessons')
     template = loader.get_template('panel.html')
     return HttpResponse(template.render({}, request))
 
@@ -68,7 +70,6 @@ def courses_view(request):
             'done_percentage': done_percentage
         })
     template = loader.get_template('courses.html')
-    print(data)
     context = {
         'courses': data
     }
@@ -87,6 +88,19 @@ def course_detail_view(request, course_id):
     context = {
         'course': course,
         'lessons': lessons
+    }
+    return HttpResponse(template.render(context, request))
+
+@login_required(login_url='/login')
+def practical_detail_view(request, practical_id):
+    template = loader.get_template('practical_detail.html')
+    if not PracticalLesson.objects.filter(pk=practical_id).exists():
+        return HttpResponse('Nie ma takiej lekcji')
+    lesson = PracticalLesson.objects.get(pk=practical_id)
+    if lesson.course.student != request.user.student:
+        return HttpResponse('Nie ma takiej lekcji')
+    context = {
+        'lesson': lesson
     }
     return HttpResponse(template.render(context, request))
 

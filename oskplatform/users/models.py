@@ -12,6 +12,10 @@ class Student(models.Model):
     def __str__(self):
         return f'{self.id} - {self.surname} {self.name}'
     
+    @property
+    def full_name(self):
+        return f'{self.surname} {self.name}'
+    
 class Instructor(models.Model):
     id = models.AutoField(primary_key=True)
     surname = models.CharField(max_length=50, null=False)
