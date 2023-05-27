@@ -119,6 +119,11 @@
             <div class="col-12 col-sm-6 mb-2 mb-sm-0">
                 {% if user.permissions_type != "S" %}
                 <a class="btn btn-primary" href="/practical/{{lesson.id}}/edit">Edytuj</a>
+                {% if lesson.is_cancelled %}
+                <a class="btn btn-secondary" href="/practical/{{lesson.id}}/change_status">Zmień status</a>
+                {% else %}
+                <a class="btn btn-secondary" href="/practical/{{lesson.id}}/change_status">Anuluj jazdę</a>
+                {% endif %}
                 {% endif %}
             </div>
             <div class="col-12 col-sm-6">

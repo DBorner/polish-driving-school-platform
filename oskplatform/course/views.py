@@ -117,6 +117,22 @@ def practical_detail_view(request, practical_id):
     return HttpResponse(template.render(context, request))
 
 @login_required(login_url='/login')
+def change_practical_lesson_status_view(request, practical_id):
+    if request.user.permissions_type == "S":
+        return HttpResponse('Nie masz uprawnień do tej strony')
+    if not PracticalLesson.objects.filter(pk=practical_id).exists():
+        return HttpResponse('Nie ma takiej lekcji')
+    lesson = PracticalLesson.objects.get(pk=practical_id)
+    if request.user.permissions_type == "I" and lesson.instructor != request.user.instructor:
+        return HttpResponse('Nie masz uprawnień do tej strony')
+    if lesson.is_cancelled:
+        lesson.is_cancelled = False
+    else:
+        lesson.is_cancelled = True
+    lesson.save()
+    return redirect(f'/practical/{practical_id}')
+
+@login_required(login_url='/login')
 def register_student_view(request):
     if request.user.permissions_type != 'E':
         return HttpResponse('Nie masz uprawnień do tej strony')
