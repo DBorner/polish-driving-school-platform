@@ -3,9 +3,9 @@ from django.template import loader
 from django.contrib.auth.decorators import login_required
 from password_generator import PasswordGenerator
 from users.models import CustomUser, Student, Employee, Instructor
-from course.models import PracticalLesson, Course, Category
+from course.models import PracticalLesson, Course, Category, Vehicle
 from django.utils import timezone
-from course.forms import NewStudentForm, SetPasswordForm
+from course.forms import NewStudentForm, SetPasswordForm, EditPracticalLessonForm
 from django.contrib import messages
 from django.shortcuts import redirect
 
@@ -131,6 +131,51 @@ def change_practical_lesson_status_view(request, practical_id):
         lesson.is_cancelled = True
     lesson.save()
     return redirect(f'/practical/{practical_id}')
+
+@login_required(login_url='/login')
+def edit_practical_lesson_view(request, practical_id):
+    if request.user.permissions_type == "S":
+        return HttpResponse('Nie masz uprawnień do tej strony')
+    if not PracticalLesson.objects.filter(pk=practical_id).exists():
+        return HttpResponse('Nie ma takiej lekcji')
+    lesson = PracticalLesson.objects.get(pk=practical_id)
+    if request.user.permissions_type == "I" and lesson.instructor != request.user.instructor:
+        return HttpResponse('Nie masz uprawnień do tej strony')
+    if request.method == 'POST':
+        print(request.POST)
+        form = EditPracticalLessonForm(request.POST)
+        if form.is_valid():
+            lesson.cost = form.cleaned_data['cost']
+            lesson.date = form.cleaned_data['date']
+            lesson.start_time = form.cleaned_data['start_time']
+            lesson.num_of_hours = form.cleaned_data['num_of_hours']
+            lesson.num_of_km = form.cleaned_data['num_of_km']
+            lesson.vehicle = form.cleaned_data['vehicle']
+            if request.user.permissions_type != "I":
+                lesson.instructor = form.cleaned_data['instructor']
+            lesson.save()
+            return redirect(f'/practical/{practical_id}')
+        else:
+            messages.error(request, 'Wprowadzono niepoprawne dane')
+    template = loader.get_template('practical_edit.html')
+    vehicles = [None]
+    for vehicle in Vehicle.objects.filter(is_available=True):
+        vehicles.append(vehicle)
+    if lesson.vehicle is not None:
+        vehicles.remove(lesson.vehicle)
+        vehicles.insert(0, lesson.vehicle)
+    instructors = []
+    for instructor in Instructor.objects.filter(is_active=True):
+        instructors.append(instructor)
+    if lesson.instructor  in instructors:
+        instructors.remove(lesson.instructor)
+    instructors.insert(0, lesson.instructor)
+    context = {
+        'lesson': lesson,
+        'vehicles': vehicles,
+        'instructors': instructors
+    }
+    return HttpResponse(template.render(context, request))
 
 @login_required(login_url='/login')
 def register_student_view(request):

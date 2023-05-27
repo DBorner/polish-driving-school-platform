@@ -4,6 +4,8 @@
 
 {% block content %}
 <div>
+    <form action="#" method="post">
+    {% csrf_token %}
     
     <section class="py-8">
       <div class="container">
@@ -23,11 +25,7 @@
               </span>
               <span class="small text-secondary">Koszt</span>
             </div>
-            {% if lesson.is_paid %}
-            <span class="small">{{ lesson.cost }} zł</span>
-            {% else %}
-            <span class="small">W ramach kursu</span>
-            {% endif %}
+            <span class="small"><input class="form-control" type="number" name="cost" placeholder="np. 100" id="" value={{lesson.cost}}></span>
           </div>
           <div class="d-flex mb-4 align-items-center justify-content-between">
             <div class="d-flex align-items-center">
@@ -39,7 +37,7 @@
               </span>
               <span class="small text-secondary">Data rozpoczęcia</span>
             </div>
-            <span class="small">{{ lesson.date|date:"d.m.Y" }} r.</span>
+            <span class="small"><input class="form-control" type="date" name="date" id="" value={{lesson.date|date:"Y-m-d"}}></span>
           </div>
 
           <div class="d-flex mb-4 align-items-center justify-content-between">
@@ -52,7 +50,20 @@
               </span>
               <span class="small text-secondary">Godzina</span>
             </div>
-            <span class="small">{{ lesson.start_time|time:"H:i" }} - {{ lesson.get_end_time|time:"H:i" }}</span>
+            <span class="small"><input class="form-control" type="time" name="start_time" id="" value={{lesson.start_time|time:"H:i"}}></span>
+          </div>
+
+          <div class="d-flex mb-4 align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <span class="me-2 d-inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewbox="0 0 16 16">
+                    <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"></path>
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"></path>
+    </svg>
+              </span>
+              <span class="small text-secondary">Długość</span>
+            </div>
+            <span class="small"><input class="form-control" type="number" name="num_of_hours" id="" value={{lesson.num_of_hours}}></span>
           </div>
 
           <div class="d-flex mb-4 align-items-center justify-content-between">
@@ -65,13 +76,10 @@
               </span>
               <span class="small text-secondary">Ilość kilometrów</span>
             </div>
-            {% if lesson.is_number_of_km_filled %}
-            <span class="small">{{ lesson.num_of_km }} km</span>
-            {% else %}
-            <span class="small">Nie uzupełniono</span>
-            {% endif %}
+            <span class="small"><input class="form-control" type="number" name="num_of_km" id="" placeholder = "np. 35" value={{lesson.num_of_km}}></span>
           </div>
 
+          
           <div class="d-flex mb-4 align-items-center justify-content-between">
             <div class="d-flex align-items-center">
               <span class="me-2 d-inline-block">
@@ -81,7 +89,15 @@
               </span>
               <span class="small text-secondary">Instruktor</span>
             </div>
-            <span class="small">{{lesson.instructor.full_name}}</span>
+            <span class="small"><select name="instructor">
+                {% if user.permissions_type == "E"%}
+                {% for instructor in instructors %}
+                <option value={{instructor.id}}>{{instructor}}</option>
+                {% endfor %}
+                {% else %}
+                <option value={{lesson.instructor.id}}>{{lesson.instructor}}</option>
+                {% endif %}
+              </select></span>
           </div>
 
           <div class="d-flex mb-4 align-items-center justify-content-between">
@@ -95,36 +111,17 @@
               </span>
               <span class="small text-secondary">Pojazd</span>
             </div>
-            {% if lesson.is_vehicle_filled %}
-            <span class="small">{{lesson.vehicle.brand}} {{lesson.vehicle.model}} {{lesson.vehicle.year_of_production}} </span>
-            {% else %}
-            <span class="small">Nie uzupełniono</span>
-            {% endif %}
+            <span class="small"><select name="vehicle">
+                {% for vehicle in vehicles %}
+                <option value={{vehicle.id}}>{{vehicle.brand}} {{vehicle.model}} {{vehicle.year_of_production}}</option>
+                {% endfor %}
+              </select></span>
           </div>
 
-          <div class="d-flex mb-6 align-items-center justify-content-between">
-            <div class="d-flex align-items-center">
-              <span class="me-2 d-inline-block">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewbox="0 0 16 16">
-      <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"></path>
-      <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"></path>
-    </svg>
-              </span>
-              <span class="small text-secondary">Status</span>
-            </div>
-            <span class="small">{% if lesson.is_cancelled %}Anulowano{% elif lesson.has_already_happened %}Zrealizowano{% else %}Zaplanowano{% endif %}</span>
-          </div>
 
           <div class="row">
             <div class="col-12 col-sm-6 mb-2 mb-sm-0">
-                {% if user.permissions_type != "S" %}
-                <a class="btn btn-primary" href="/practical/{{lesson.id}}/edit">Edytuj</a>
-                {% if lesson.is_cancelled %}
-                <a class="btn btn-secondary" href="/practical/{{lesson.id}}/change_status">Zmień status</a>
-                {% else %}
-                <a class="btn btn-secondary" href="/practical/{{lesson.id}}/change_status">Anuluj jazdę</a>
-                {% endif %}
-                {% endif %}
+                <button class="btn btn-primary" type="submit">Zapisz zmiany</button>
             </div>
             <div class="col-12 col-sm-6">
                
@@ -134,4 +131,5 @@
       </div>
     </section>
     </div>
+    </form>
 {% endblock content %}
