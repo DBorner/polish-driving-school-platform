@@ -1,0 +1,37 @@
+{% extends 'base_course.html' %}
+
+{% block title %}Rejestracja kursanta{% endblock title %}
+
+{% block content %}
+      
+      <form action="#" method="post">
+    {% csrf_token %}
+      <div class="mb-6">
+        <label class="form-label" for="">Nazwisko</label>
+        <input class="form-control" type="text" name="surname" placeholder="np. Kowalski" id="">
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Imię</label>
+        <input class="form-control" type="text" name="name" placeholder="np. Jan" id="">
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Data urodzenia</label>
+        <input class="form-control" type="date" name="birth-date" placeholder="np. 07-05-2002" id="">
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Numer telefonu</label>
+        <input class="form-control" type="number" name="phone-number" placeholder="np. 111 222 333" id="">
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Adres e-mail</label>
+        <input class="form-control" type="email" name="email" placeholder="np. jan.kowalski@email.com" id="">
+      </div>
+      
+      <button class="btn btn-primary" type="submit">Zarejestruj</button>
+      </form>
+
+{% endblock content %}

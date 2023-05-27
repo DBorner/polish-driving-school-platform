@@ -7,3 +7,7 @@ from django.contrib.auth.decorators import login_required
 def panel_view(request):
     template = loader.get_template('panel.html')
     return HttpResponse(template.render({}, request))
+
+def register_student_view(request):
+    template = loader.get_template('register_student.html')
+    return HttpResponse(template.render({}, request))
