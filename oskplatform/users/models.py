@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 class Student(models.Model):
     id = models.AutoField(primary_key=True)
@@ -49,7 +49,18 @@ permissions_choices = [
     ('I', 'Instruktor'),
     ('E', 'Pracownik'),
     ('S', 'Kursant')
-]    
+]
+
+class CustomUserMenager(BaseUserManager):    
+    
+    def create_user(self, username, password=None, permissions_type='S', **extra_fields):
+        if not username:
+            raise ValueError('Użytkownik musi mieć nazwę użytkownika')
+        user = self.model(username=username, permissions_type=permissions_type, **extra_fields)
+        user.set_password(password)
+        user.save()
+        return user
+    
     
 class CustomUser(AbstractUser):
     permissions_type = models.CharField(max_length=1, choices=permissions_choices, default='S', null=False)
