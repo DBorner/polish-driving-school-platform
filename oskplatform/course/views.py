@@ -40,13 +40,20 @@ def profile_settings_view(request):
 
 @login_required(login_url='/login')
 def upcoming_lessons_view(request):
-    user_courses = Course.objects.filter(student=request.user.student, course_status='R')
     all_practical_lessons = []
-    for course in user_courses:
-        practical_lessons = PracticalLesson.objects.filter(course=course, date__gte=timezone.now())
-        for lesson in practical_lessons:
-            all_practical_lessons.append(lesson)
-    all_practical_lessons.sort(key=lambda x: x.date)
+    if request.user.permissions_type == 'S':
+        user_courses = Course.objects.filter(student=request.user.student, course_status='R')
+        for course in user_courses:
+            practical_lessons = PracticalLesson.objects.filter(course=course, date__gte=timezone.now())
+            for lesson in practical_lessons:
+                all_practical_lessons.append(lesson)
+        all_practical_lessons.sort(key=lambda x: x.date)
+    elif request.user.permissions_type == 'I':
+        all_practical_lessons = PracticalLesson.objects.filter(instructor=request.user.instructor, date__gte=timezone.now())
+        all_practical_lessons = all_practical_lessons.order_by('date')
+    else:
+        all_practical_lessons = PracticalLesson.objects.filter(date__gte=timezone.now())
+        all_practical_lessons = all_practical_lessons.order_by('date')
     template = loader.get_template('upcoming_lessons.html')
     context = {
         'lessons': all_practical_lessons
@@ -55,7 +62,12 @@ def upcoming_lessons_view(request):
 
 @login_required(login_url='/login')
 def courses_view(request):
-    user_courses = Course.objects.filter(student=request.user.student)
+    if request.user.permissions_type == 'S':
+        user_courses = Course.objects.filter(student=request.user.student)
+    elif request.user.permissions_type == 'I':
+        user_courses = Course.objects.filter(instructor=request.user.instructor, course_status='R')
+    else:
+        user_courses = Course.objects.all()
     data = []
     for course in user_courses:
         practical_lessons = PracticalLesson.objects.filter(course=course, date__lt=timezone.now(), is_cancelled=False)
@@ -81,7 +93,7 @@ def course_detail_view(request, course_id):
     if not Course.objects.filter(pk=course_id).exists():
         return HttpResponse('Nie ma takiego kursu')
     course = Course.objects.get(pk=course_id)
-    if course.student != request.user.student:
+    if request.user.permissions_type == "S" and course.student != request.user.student:
         return HttpResponse('Nie ma takiego kursu')
     lessons = PracticalLesson.objects.filter(course=course)
     lessons = lessons.order_by('date')
@@ -97,7 +109,7 @@ def practical_detail_view(request, practical_id):
     if not PracticalLesson.objects.filter(pk=practical_id).exists():
         return HttpResponse('Nie ma takiej lekcji')
     lesson = PracticalLesson.objects.get(pk=practical_id)
-    if lesson.course.student != request.user.student:
+    if request.user.permissions_type == "S" and lesson.course.student != request.user.student:
         return HttpResponse('Nie ma takiej lekcji')
     context = {
         'lesson': lesson
