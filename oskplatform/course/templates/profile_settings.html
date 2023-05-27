@@ -1,0 +1,48 @@
+{% extends 'base_course.html' %}
+
+{% block title %}Ustawienia konta {{user}}{% endblock %}
+
+{% block content %}
+<div>
+    <h4>Twoje dane</h4>
+    </div>
+    
+    <div>
+    <h5 class="">Imię:</h5>
+    
+    <label class="form-label">{{ user_info.name }}</label>
+    </div>
+
+    <div>
+    <h5 class="">Nazwisko:</h5>
+        
+    <label class="form-label">{{ user_info.surname }}</label>
+    </div>
+
+    <div>
+    <h5 class="">Data urodzenia:</h5>
+     
+    <label class="form-label">{{user_info.birth_date|date:"d.m.Y"}}r.</label>
+    </div>
+    <div>
+
+    <h4>Zmiana hasła</h4>
+    </div>
+    
+    <form action="/profile_settings/" method="post">
+    {% csrf_token %}
+    
+    <div class="mb-6">
+      <label class="form-label" for="">Nowe hasło</label>
+      <input class="form-control" type="password" name="new_password1" placeholder="Nowe hasło" id="">
+    </div>
+    
+    <div class="mb-6">
+      <label class="form-label" for="">Powtórz hasło</label>
+      <input class="form-control" type="password" name="new_password2" placeholder="Powtórz hasło" id="">
+    </div>
+    
+    <button class="btn btn-primary" type="submit">Zmień hasło</button>
+    </form>
+    </div>
+{% endblock content %}

@@ -8,7 +8,6 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('user_info/', user_views.user_info),
     path('category/<str:category_id>/', platform_views.category),
     path('vehicles/', platform_views.vehicles),
     path('instructors/', platform_views.instructors),
@@ -18,5 +17,6 @@ urlpatterns = [
     path('panel/', course_views.panel_view),
     path('register_student/', course_views.register_student_view),
     path('upcoming_lessons/', course_views.upcoming_lessons_view),
+    path('profile_settings/', course_views.profile_settings_view),
     path('', platform_views.home),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

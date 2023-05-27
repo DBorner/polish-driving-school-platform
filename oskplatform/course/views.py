@@ -2,15 +2,39 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required
 from password_generator import PasswordGenerator
-from users.models import CustomUser, Student
+from users.models import CustomUser, Student, Employee, Instructor
 from course.models import PracticalLesson, Course
 from django.utils import timezone
-from course.forms import NewStudentForm
+from course.forms import NewStudentForm, SetPasswordForm
+from django.contrib import messages
+from django.shortcuts import redirect
 
 @login_required(login_url='/login')
 def panel_view(request):
     template = loader.get_template('panel.html')
     return HttpResponse(template.render({}, request))
+
+@login_required(login_url='/login')
+def profile_settings_view(request):
+    user = request.user
+    if request.method == 'POST':
+        form = SetPasswordForm(user, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Poprawnie zmieniłeś hasło")
+            return redirect('/login')
+        else:
+            for error in list(form.errors.values()):
+                messages.error(request, error)
+    if user.permissions_type == 'S':
+        user_info = user.student
+    elif user.permissions_type == 'I':
+        user_info = user.instructor
+    else:
+        user_info = user.employee
+    template = loader.get_template('profile_settings.html')
+    context = {'user_info': user_info}
+    return HttpResponse(template.render(context, request))
 
 @login_required(login_url='/login')
 def upcoming_lessons_view(request):
