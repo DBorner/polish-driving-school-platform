@@ -12,5 +12,7 @@ urlpatterns = [
     path('vehicles/', platform_views.vehicles),
     path('instructors/', platform_views.instructors),
     path('theorys/', platform_views.theorys),
+    path('login/', user_views.login_view),
+    path('logout/', user_views.logout_view),
     path('', platform_views.home),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

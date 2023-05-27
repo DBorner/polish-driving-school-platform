@@ -32,17 +32,25 @@
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/vehicles">Dostępne samochody</a></li>
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/instructors">Instruktorzy</a></li>
                         <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/theorys">Nadchodzące kursy</a></li>
-                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="login">Logowanie</a></li>
+                        {% if user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/panel">Panel</a></li>
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/logout">Wyloguj</a></li>
+                        {% else %}
+                        <li class="nav-item"><a class="nav-link px-lg-3 py-3 py-lg-4" href="/login">Logowanie</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>
         </nav>
+
         {% block header%}
         {% endblock %}
 
+        {% include 'messages.html' %}
+
         {% block content %}
         {% endblock %}
-        <!-- Footer-->
+
         <footer class="border-top">
             <div class="container px-4 px-lg-5">
                 <div class="row gx-4 gx-lg-5 justify-content-center">
