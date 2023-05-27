@@ -19,5 +19,6 @@ urlpatterns = [
     path('upcoming_lessons/', course_views.upcoming_lessons_view),
     path('profile_settings/', course_views.profile_settings_view),
     path('courses/', course_views.courses_view),
+    path('courses/<int:course_id>/', course_views.course_detail_view),
     path('', platform_views.home),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

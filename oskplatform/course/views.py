@@ -75,6 +75,22 @@ def courses_view(request):
     return HttpResponse(template.render(context, request))
 
 @login_required(login_url='/login')
+def course_detail_view(request, course_id):
+    template = loader.get_template('course_detail.html')
+    if not Course.objects.filter(pk=course_id).exists():
+        return HttpResponse('Nie ma takiego kursu')
+    course = Course.objects.get(pk=course_id)
+    if course.student != request.user.student:
+        return HttpResponse('Nie ma takiego kursu')
+    lessons = PracticalLesson.objects.filter(course=course)
+    lessons = lessons.order_by('date')
+    context = {
+        'course': course,
+        'lessons': lessons
+    }
+    return HttpResponse(template.render(context, request))
+
+@login_required(login_url='/login')
 def register_student_view(request):
     if request.user.permissions_type != 'E':
         return HttpResponse('Nie masz uprawnień do tej strony')
