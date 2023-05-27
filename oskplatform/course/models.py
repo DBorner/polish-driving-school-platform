@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import date
 
 vehicle_type_choices = [
     ('SO', 'Samochód osobowy'),
@@ -88,4 +89,8 @@ class PracticalLesson(models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, null=True, blank=True)
     
     def __str__(self):
-        return f'{self.id} - {self.course.pkk_number} {self.date} ({self.start_time})' 
+        return f'{self.id} - {self.course.pkk_number} {self.date} ({self.start_time})'
+
+    @property
+    def has_already_happened(self):
+        return self.date < date.today() 
