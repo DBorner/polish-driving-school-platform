@@ -1,0 +1,75 @@
+{% extends 'base_course.html' %}
+
+{% block title %}Kursy{% endblock %}
+
+{% block content %}
+<section class="py-8">
+    <div class="container">
+      <div class="pt-4 bg-white rounded shadow">
+        <div class="px-6">
+          <div class="row align-items-center justify-content-between">
+            <div class="col-12 col-md-auto mb-4 mb-md-0">
+              <h5>Lista kursów</h5>
+              
+            </div>
+            <div class="col-auto ms-auto">
+              
+            </div>
+          </div>
+          
+        </div>
+        <div class="table-responsive">
+          <table class="table mb-0 bg-white border-light small">
+            <thead class="table-light">
+              <tr class="text-secondary">
+  <th class="py-3 px-6">Kategoria(Numer PKK)</th>
+  <th class="py-3 px-6">Status(Data rozpoczęcia)</th>
+  <th class="py-3 px-6">Progres</th>
+  </tr>
+            </thead>
+            <tbody>
+              {% for data in courses %}
+              <tr>
+                <td class="py-4 px-6">
+                  <div class="d-flex align-items-center">
+                    
+                    <div class="d-flex align-items-center">
+                      
+                      <div>
+                        <p class="mb-0 small">{{ data.course.category }}</p>
+                        <span class="text-secondary">{{ data.course.pkk_number }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                <td class="py-4 px-6">
+                  <p class="mb-0 small">{% if data.course.course_status == 'R'%}Rozpoczęty{% elif data.course.course_status == 'Z'%}Zakończony{% else %}Anulowany{% endif %}</p>
+                  <span class="text-secondary">{{data.course.start_date|date:"d.m.Y"}}r.</span>
+                </td>
+                <td class="py-4 px-6">
+                  <span class="d-block mb-1 text-primary">{{data.done_percentage|floatformat:0}} %</span>
+                  <div class="d-inline-flex align-items-center">
+                    <div class="position-relative pt-1 me-12 bg-secondary-light rounded" style="min-width: 200px;">
+                      <div class="position-absolute top-0 start-0 h-100 col-4 bg-primary rounded" style="width: {{data.done_percentage}}%"></div>
+                    </div>
+                    <a href="/courses/{{data.course.id}}">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewbox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"></path>
+                      </svg>
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <div class="py-4 px-6 bg-white text-center">
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  </div>
+  </section>
+</div>
+{% endblock content %}

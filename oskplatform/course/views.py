@@ -3,7 +3,7 @@ from django.template import loader
 from django.contrib.auth.decorators import login_required
 from password_generator import PasswordGenerator
 from users.models import CustomUser, Student, Employee, Instructor
-from course.models import PracticalLesson, Course
+from course.models import PracticalLesson, Course, Category
 from django.utils import timezone
 from course.forms import NewStudentForm, SetPasswordForm
 from django.contrib import messages
@@ -48,6 +48,29 @@ def upcoming_lessons_view(request):
     template = loader.get_template('upcoming_lessons.html')
     context = {
         'lessons': all_practical_lessons
+    }
+    return HttpResponse(template.render(context, request))
+
+@login_required(login_url='/login')
+def courses_view(request):
+    user_courses = Course.objects.filter(student=request.user.student)
+    data = []
+    for course in user_courses:
+        practical_lessons = PracticalLesson.objects.filter(course=course, date__lt=timezone.now(), is_cancelled=False)
+        practical_hours = 0
+        for lesson in practical_lessons:
+            practical_hours += lesson.num_of_hours
+        done_percentage = practical_hours/course.category.required_practical_hours*100
+        if done_percentage > 100:
+            done_percentage = 100
+        data.append({
+            'course': course,
+            'done_percentage': done_percentage
+        })
+    template = loader.get_template('courses.html')
+    print(data)
+    context = {
+        'courses': data
     }
     return HttpResponse(template.render(context, request))
 

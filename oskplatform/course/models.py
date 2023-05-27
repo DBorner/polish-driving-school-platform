@@ -32,6 +32,7 @@ class Vehicle(models.Model):
 class Category(models.Model):
     symbol = models.CharField(max_length=4, primary_key=True, unique=True, null=False)
     description = models.TextField(null=False)
+    required_practical_hours = models.IntegerField(null=False, default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=False)
     is_discount = models.BooleanField(default=False)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)

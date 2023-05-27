@@ -18,5 +18,6 @@ urlpatterns = [
     path('register_student/', course_views.register_student_view),
     path('upcoming_lessons/', course_views.upcoming_lessons_view),
     path('profile_settings/', course_views.profile_settings_view),
+    path('courses/', course_views.courses_view),
     path('', platform_views.home),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
