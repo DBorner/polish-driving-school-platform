@@ -91,10 +91,12 @@ def courses_view(request):
 def course_detail_view(request, course_id):
     template = loader.get_template('course_detail.html')
     if not Course.objects.filter(pk=course_id).exists():
-        return HttpResponse('Nie ma takiego kursu')
+        messages.error(request, 'Nie ma takiego kursu')
+        return redirect('/courses')
     course = Course.objects.get(pk=course_id)
     if request.user.permissions_type == "S" and course.student != request.user.student:
-        return HttpResponse('Nie ma takiego kursu')
+        messages.error(request, 'Nie ma takiego kursu')
+        return redirect('/courses')
     lessons = PracticalLesson.objects.filter(course=course)
     lessons = lessons.order_by('date')
     context = {
@@ -107,10 +109,12 @@ def course_detail_view(request, course_id):
 def practical_detail_view(request, practical_id):
     template = loader.get_template('practical_detail.html')
     if not PracticalLesson.objects.filter(pk=practical_id).exists():
-        return HttpResponse('Nie ma takiej lekcji')
+        messages.error(request, 'Nie ma takiej jazdy')
+        return redirect('/upcoming_lessons')
     lesson = PracticalLesson.objects.get(pk=practical_id)
     if request.user.permissions_type == "S" and lesson.course.student != request.user.student:
-        return HttpResponse('Nie ma takiej lekcji')
+        messages.error(request, 'Nie ma takiej jazdy')
+        return redirect('/upcoming_lessons')
     context = {
         'lesson': lesson
     }
@@ -119,12 +123,15 @@ def practical_detail_view(request, practical_id):
 @login_required(login_url='/login')
 def change_practical_lesson_status_view(request, practical_id):
     if request.user.permissions_type == "S":
-        return HttpResponse('Nie masz uprawnień do tej strony')
+        messages.error(request, 'Nie masz uprawnień do tej strony')
+        return redirect(f'/practical/{practical_id}')
     if not PracticalLesson.objects.filter(pk=practical_id).exists():
-        return HttpResponse('Nie ma takiej lekcji')
+        messages.error(request, 'Nie ma takiej jazdy')
+        return redirect('/upcoming_lessons')
     lesson = PracticalLesson.objects.get(pk=practical_id)
     if request.user.permissions_type == "I" and lesson.instructor != request.user.instructor:
-        return HttpResponse('Nie masz uprawnień do tej strony')
+        messages.error(request, 'Nie posiadasz wymaganych uprawnień')
+        return redirect(f'/practical/{practical_id}')
     if lesson.is_cancelled:
         lesson.is_cancelled = False
     else:
@@ -135,12 +142,15 @@ def change_practical_lesson_status_view(request, practical_id):
 @login_required(login_url='/login')
 def edit_practical_lesson_view(request, practical_id):
     if request.user.permissions_type == "S":
-        return HttpResponse('Nie masz uprawnień do tej strony')
+        messages.error(request, 'Nie masz uprawnień do tej strony')
+        return redirect('/upcoming_lessons')
     if not PracticalLesson.objects.filter(pk=practical_id).exists():
-        return HttpResponse('Nie ma takiej lekcji')
+        messages.error(request, 'Nie ma takiej lekcji')
+        return redirect('/upcoming_lessons')
     lesson = PracticalLesson.objects.get(pk=practical_id)
     if request.user.permissions_type == "I" and lesson.instructor != request.user.instructor:
-        return HttpResponse('Nie masz uprawnień do tej strony')
+        messages.error(request, 'Nie posiadasz wymaganych uprawnień')
+        return redirect(f'/practical/{practical_id}')
     if request.method == 'POST':
         print(request.POST)
         form = EditPracticalLessonForm(request.POST)
@@ -180,7 +190,8 @@ def edit_practical_lesson_view(request, practical_id):
 @login_required(login_url='/login')
 def register_student_view(request):
     if request.user.permissions_type not in {'A', 'E'} :
-        return HttpResponse('Nie masz uprawnień do tej strony')
+        messages.error(request, 'Nie masz uprawnień do tej strony')
+        return redirect('/upcoming_lessons')
     if request.method == 'POST':
         form = NewStudentForm(request.POST)
         if form.is_valid():
@@ -189,8 +200,8 @@ def register_student_view(request):
             birth_date = request.POST.get('birth_date')
             phone_number = request.POST.get('phone_number')
             email = request.POST.get('email')
-            id = CustomUser.objects.order_by('-pk')[0].pk + 1
-            username = f'{surname.lower()[:3]}{name.lower()[:3]}{id}'
+            next_user_id = CustomUser.objects.order_by('-pk')[0].pk + 1
+            username = f'{surname.lower()[:3]}{name.lower()[:3]}{next_user_id}'
             pwo = PasswordGenerator()
             pwo.minlen = 6
             pwo.maxlen = 6
@@ -201,7 +212,7 @@ def register_student_view(request):
             student.save()
             user.save()
         else:
-            return HttpResponse('Niepoprawne dane')
+            messages.error(request, 'Wprowadzono niepoprawne dane')
         return HttpResponse(f'Utworzono nowego kursanta {student} o nazwie użytkownika {user.username} i haśle {password}')
     template = loader.get_template('register_student.html')
     return HttpResponse(template.render({}, request))
