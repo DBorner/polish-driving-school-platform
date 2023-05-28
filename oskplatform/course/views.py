@@ -251,7 +251,10 @@ def create_practical_lesson_view(request, course_id=None):
         if form.is_valid():
             if form.cleaned_data['course'] not in courses:
                 messages.error(request, 'Nie ma takiego kursu')
-                return redirect('/courses')
+                return redirect('/practical/create')
+            if form.cleaned_data['date'] < timezone.now().date():
+                messages.error(request, 'Nie można dodać jazdy, która już się odbyła')
+                return redirect('/practical/create')
             PracticalLesson.objects.create(
                 course=form.cleaned_data['course'],
                 date=form.cleaned_data['date'],
