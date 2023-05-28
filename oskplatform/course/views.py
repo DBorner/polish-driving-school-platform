@@ -2,10 +2,10 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required
 from password_generator import PasswordGenerator
-from users.models import CustomUser, Student, Employee, Instructor
+from users.models import CustomUser, Student, Employee, Instructor, Qualification
 from course.models import PracticalLesson, Course, Category, Vehicle
 from django.utils import timezone
-from course.forms import NewStudentForm, SetPasswordForm, EditPracticalLessonForm
+from course.forms import NewStudentForm, SetPasswordForm, EditPracticalLessonForm, CreatePracticalLessonForm
 from django.contrib import messages
 from django.shortcuts import redirect
 
@@ -141,6 +141,7 @@ def change_practical_lesson_status_view(request, practical_id):
 
 @login_required(login_url='/login')
 def edit_practical_lesson_view(request, practical_id):
+    
     if request.user.permissions_type == "S":
         messages.error(request, 'Nie masz uprawnień do tej strony')
         return redirect('/upcoming_lessons')
@@ -151,8 +152,8 @@ def edit_practical_lesson_view(request, practical_id):
     if request.user.permissions_type == "I" and lesson.instructor != request.user.instructor:
         messages.error(request, 'Nie posiadasz wymaganych uprawnień')
         return redirect(f'/practical/{practical_id}')
+    
     if request.method == 'POST':
-        print(request.POST)
         form = EditPracticalLessonForm(request.POST)
         if form.is_valid():
             lesson.cost = form.cleaned_data['cost']
@@ -167,19 +168,23 @@ def edit_practical_lesson_view(request, practical_id):
             return redirect(f'/practical/{practical_id}')
         else:
             messages.error(request, 'Wprowadzono niepoprawne dane')
+
     template = loader.get_template('practical_edit.html')
     vehicles = [None]
     for vehicle in Vehicle.objects.filter(is_available=True):
         vehicles.append(vehicle)
+        
     if lesson.vehicle is not None:
         vehicles.remove(lesson.vehicle)
         vehicles.insert(0, lesson.vehicle)
+        
     instructors = []
     for instructor in Instructor.objects.filter(is_active=True):
         instructors.append(instructor)
     if lesson.instructor  in instructors:
         instructors.remove(lesson.instructor)
     instructors.insert(0, lesson.instructor)
+    
     context = {
         'lesson': lesson,
         'vehicles': vehicles,
@@ -188,7 +193,73 @@ def edit_practical_lesson_view(request, practical_id):
     return HttpResponse(template.render(context, request))
 
 @login_required(login_url='/login')
+def create_practical_lesson_view(request, course_id=None):
+    
+    template = loader.get_template('practical_create.html')
+    
+    instructor_qualifications = []
+    for qualification in Qualification.objects.filter(instructor=request.user.instructor):
+        instructor_qualifications.append(qualification.category)
+            
+    if request.user.permissions_type != "I":
+        messages.error(request, 'Nie masz uprawnień do tej strony')
+        return redirect('/upcoming_lessons')
+    
+    if course_id != None:
+        if not Course.objects.filter(pk=course_id).exists():
+            messages.error(request, 'Nie ma takiego kursu')
+            return redirect('/courses')
+        selected_course = Course.objects.get(pk=course_id)
+        if selected_course.course_status != 'R':
+            messages.error(request, 'Nie można dodać jazdy do zakończonego kursu')
+            return redirect('/courses')
+        if selected_course.category not in instructor_qualifications:
+            messages.error(request, 'Nie posiadasz wymaganych uprawnień')
+            return redirect('/courses')
+    
+    courses = []
+    for course in Course.objects.filter(course_status='R', category__symbol__in=instructor_qualifications):
+        courses.append(course)
+    if course_id != None:
+        courses.remove(selected_course)
+        courses.insert(0, selected_course)
+        
+    vehicles = [None]
+    for vehicle in Vehicle.objects.filter(is_available=True).exclude(type__contains='P'):
+        vehicles.append(vehicle)
+        
+    if request.method == 'POST':
+        form = CreatePracticalLessonForm(request.POST)
+        if form.is_valid():
+            if form.cleaned_data['course'] not in courses:
+                messages.error(request, 'Nie ma takiego kursu')
+                return redirect('/courses')
+            PracticalLesson.objects.create(
+                course=form.cleaned_data['course'],
+                date=form.cleaned_data['date'],
+                start_time=form.cleaned_data['start_time'],
+                num_of_hours=form.cleaned_data['num_of_hours'],
+                num_of_km=form.cleaned_data['num_of_km'],
+                cost=form.cleaned_data['cost'],
+                instructor=request.user.instructor,
+                vehicle=form.cleaned_data['vehicle']
+            )
+            messages.success(request, 'Dodano nową jazdę')
+            return redirect('/upcoming_lessons')
+        else:
+            messages.error(request, 'Wprowadzono niepoprawne dane')
+            
+    context = {
+        'instructor': request.user.instructor,
+        'vehicles': vehicles,
+        'courses': courses
+    }
+    
+    return HttpResponse(template.render(context, request))
+
+@login_required(login_url='/login')
 def register_student_view(request):
+    template = loader.get_template('register_student.html')
     if request.user.permissions_type not in {'A', 'E'} :
         messages.error(request, 'Nie masz uprawnień do tej strony')
         return redirect('/upcoming_lessons')
@@ -213,6 +284,6 @@ def register_student_view(request):
             user.save()
         else:
             messages.error(request, 'Wprowadzono niepoprawne dane')
+            return HttpResponse(template.render({}, request))
         return HttpResponse(f'Utworzono nowego kursanta {student} o nazwie użytkownika {user.username} i haśle {password}')
-    template = loader.get_template('register_student.html')
     return HttpResponse(template.render({}, request))

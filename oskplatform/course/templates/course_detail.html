@@ -52,6 +52,12 @@
           <div class="row">
             <div class="col-12 col-sm-6 mb-2 mb-sm-0">
               
+              <div class="col-12 col-sm-6 mb-2 mb-sm-0">
+                {% if user.permissions_type == "I" %}
+                <a class="btn btn-primary" href="/practical/create/{{course.id}}">Umów jazdę</a>
+                {% endif %}
+            </div>
+
             </div>
             <div class="col-12 col-sm-6">
               

@@ -23,5 +23,7 @@ urlpatterns = [
     path('practical/<int:practical_id>/', course_views.practical_detail_view),
     path('practical/<int:practical_id>/change_status/', course_views.change_practical_lesson_status_view),
     path('practical/<int:practical_id>/edit/', course_views.edit_practical_lesson_view),
+    path('practical/create/', course_views.create_practical_lesson_view),
+    path('practical/create/<int:course_id>/', course_views.create_practical_lesson_view),
     path('', platform_views.home),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
