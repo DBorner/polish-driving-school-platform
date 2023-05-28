@@ -179,7 +179,7 @@ def edit_practical_lesson_view(request, practical_id):
 
 @login_required(login_url='/login')
 def register_student_view(request):
-    if request.user.permissions_type != 'E':
+    if request.user.permissions_type not in {'A', 'E'} :
         return HttpResponse('Nie masz uprawnień do tej strony')
     if request.method == 'POST':
         form = NewStudentForm(request.POST)
