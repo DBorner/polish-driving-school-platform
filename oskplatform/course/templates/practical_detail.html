@@ -1,0 +1,142 @@
+{% extends 'base_course.html' %}
+
+{% block title %}Jazda{% endblock %}
+
+{% block content %}
+<div>
+    
+    <section class="py-8">
+      <div class="container">
+        <div class="p-6 bg-white rounded shadow">
+          <div class="pt-4 pb-5 px-6 border-bottom border-secondary-light">
+            <h4>{{lesson.course.student.full_name}} - Kategoria {{lesson.course.category}}</h4>
+          </div>
+          <div class="mb-5">
+            
+          </div>
+          <div class="d-flex mb-4 align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <span class="me-2 d-inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewbox="0 0 16 16">
+                  <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+                  <path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V4zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2H3z"/>    </svg>
+              </span>
+              <span class="small text-secondary">Koszt</span>
+            </div>
+            {% if lesson.is_paid %}
+            <span class="small">{{ lesson.cost }} zł</span>
+            {% else %}
+            <span class="small">W ramach kursu</span>
+            {% endif %}
+          </div>
+          <div class="d-flex mb-4 align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <span class="me-2 d-inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewbox="0 0 16 16">
+      <path d="M11 6.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm-5 3a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1zm3 0a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-1a.5.5 0 0 1-.5-.5v-1z"></path>
+      <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"></path>
+    </svg>
+              </span>
+              <span class="small text-secondary">Data rozpoczęcia</span>
+            </div>
+            <span class="small">{{ lesson.date|date:"d.m.Y" }} r.</span>
+          </div>
+
+          <div class="d-flex mb-4 align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <span class="me-2 d-inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewbox="0 0 16 16">
+                    <path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"></path>
+                    <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"></path>
+    </svg>
+              </span>
+              <span class="small text-secondary">Godzina</span>
+            </div>
+            <span class="small">{{ lesson.start_time|time:"H:i" }} - {{ lesson.get_end_time|time:"H:i" }}</span>
+          </div>
+
+          <div class="d-flex mb-4 align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <span class="me-2 d-inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewbox="0 0 16 16">
+                    <path d="M8 2a.5.5 0 0 1 .5.5V4a.5.5 0 0 1-1 0V2.5A.5.5 0 0 1 8 2zM3.732 3.732a.5.5 0 0 1 .707 0l.915.914a.5.5 0 1 1-.708.708l-.914-.915a.5.5 0 0 1 0-.707zM2 8a.5.5 0 0 1 .5-.5h1.586a.5.5 0 0 1 0 1H2.5A.5.5 0 0 1 2 8zm9.5 0a.5.5 0 0 1 .5-.5h1.5a.5.5 0 0 1 0 1H12a.5.5 0 0 1-.5-.5zm.754-4.246a.389.389 0 0 0-.527-.02L7.547 7.31A.91.91 0 1 0 8.85 8.569l3.434-4.297a.389.389 0 0 0-.029-.518z"></path>
+                    <path fill-rule="evenodd" d="M6.664 15.889A8 8 0 1 1 9.336.11a8 8 0 0 1-2.672 15.78zm-4.665-4.283A11.945 11.945 0 0 1 8 10c2.186 0 4.236.585 6.001 1.606a7 7 0 1 0-12.002 0z"></path>
+    </svg>
+              </span>
+              <span class="small text-secondary">Ilość kilometrów</span>
+            </div>
+            {% if lesson.is_number_of_km_filled %}
+            <span class="small">{{ lesson.num_of_km }} km</span>
+            {% else %}
+            <span class="small">Nie uzupełniono</span>
+            {% endif %}
+          </div>
+
+          <div class="d-flex mb-4 align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <span class="me-2 d-inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewbox="0 0 16 16">
+                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"></path>
+    </svg>
+              </span>
+              <span class="small text-secondary">Instruktor</span>
+            </div>
+            <span class="small">{{lesson.instructor.full_name}}</span>
+          </div>
+
+          <div class="d-flex mb-4 align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <span class="me-2 d-inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewbox="0 0 16 16">
+                  <path d="M4 9a1 1 0 1 1-2 0 1 1 0 0 1 2 0Zm10 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0ZM6 8a1 1 0 0 0 0 2h4a1 1 0 1 0 0-2H6ZM4.862 4.276 3.906 6.19a.51.51 0 0 0 .497.731c.91-.073 2.35-.17 3.597-.17 1.247 0 2.688.097 3.597.17a.51.51 0 0 0 .497-.731l-.956-1.913A.5.5 0 0 0 10.691 4H5.309a.5.5 0 0 0-.447.276Z"/>
+                  <path d="M2.52 3.515A2.5 2.5 0 0 1 4.82 2h6.362c1 0 1.904.596 2.298 1.515l.792 1.848c.075.175.21.319.38.404.5.25.855.715.965 1.262l.335 1.679c.033.161.049.325.049.49v.413c0 .814-.39 1.543-1 1.997V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.338c-1.292.048-2.745.088-4 .088s-2.708-.04-4-.088V13.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-1.892c-.61-.454-1-1.183-1-1.997v-.413a2.5 2.5 0 0 1 .049-.49l.335-1.68c.11-.546.465-1.012.964-1.261a.807.807 0 0 0 .381-.404l.792-1.848ZM4.82 3a1.5 1.5 0 0 0-1.379.91l-.792 1.847a1.8 1.8 0 0 1-.853.904.807.807 0 0 0-.43.564L1.03 8.904a1.5 1.5 0 0 0-.03.294v.413c0 .796.62 1.448 1.408 1.484 1.555.07 3.786.155 5.592.155 1.806 0 4.037-.084 5.592-.155A1.479 1.479 0 0 0 15 9.611v-.413c0-.099-.01-.197-.03-.294l-.335-1.68a.807.807 0 0 0-.43-.563 1.807 1.807 0 0 1-.853-.904l-.792-1.848A1.5 1.5 0 0 0 11.18 3H4.82Z"/>
+    </svg>
+              </span>
+              <span class="small text-secondary">Pojazd</span>
+            </div>
+            {% if lesson.is_vehicle_filled %}
+            <span class="small">{{lesson.vehicle.brand}} {{lesson.vehicle.model}} {{lesson.vehicle.year_of_production}} </span>
+            {% else %}
+            <span class="small">Nie uzupełniono</span>
+            {% endif %}
+          </div>
+
+          <div class="d-flex mb-6 align-items-center justify-content-between">
+            <div class="d-flex align-items-center">
+              <span class="me-2 d-inline-block">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewbox="0 0 16 16">
+      <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"></path>
+      <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"></path>
+    </svg>
+              </span>
+              <span class="small text-secondary">Status</span>
+            </div>
+            <span class="small">{% if lesson.is_cancelled %}Anulowano{% elif lesson.has_already_happened %}Zrealizowano{% else %}Zaplanowano{% endif %}</span>
+          </div>
+
+          <div class="row">
+            <div class="col-12 col-sm-6 mb-2 mb-sm-0">
+                {% if user.permissions_type != "S" %}
+                <a class="btn btn-primary" href="/practical/{{lesson.id}}/edit">Edytuj</a>
+                {% if lesson.is_cancelled %}
+                <a class="btn btn-secondary" href="/practical/{{lesson.id}}/change_status">Zmień status</a>
+                {% else %}
+                <a class="btn btn-secondary" href="/practical/{{lesson.id}}/change_status">Anuluj jazdę</a>
+                {% endif %}
+                <a class="btn btn-secondary" href="/practical/{{lesson.id}}/delete">Usuń jazdę</a>
+                {% endif %}
+                <a class="btn btn-third" href="/courses/{{lesson.course.id}}"><span class="d-inline-block text-secondary me-4">
+                  <svg width="14" height="16" viewBox="0 0 14 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M0.333618 8.99996C0.333618 9.22097 0.421416 9.43293 0.577696 9.58922C0.733976 9.7455 0.945938 9.83329 1.16695 9.83329H7.49195L5.57528 11.7416C5.49718 11.8191 5.43518 11.9113 5.39287 12.0128C5.35057 12.1144 5.32879 12.2233 5.32879 12.3333C5.32879 12.4433 5.35057 12.5522 5.39287 12.6538C5.43518 12.7553 5.49718 12.8475 5.57528 12.925C5.65275 13.0031 5.74492 13.0651 5.84647 13.1074C5.94802 13.1497 6.05694 13.1715 6.16695 13.1715C6.27696 13.1715 6.38588 13.1497 6.48743 13.1074C6.58898 13.0651 6.68115 13.0031 6.75862 12.925L10.0919 9.59163C10.1678 9.51237 10.2273 9.41892 10.2669 9.31663C10.3503 9.11374 10.3503 8.88618 10.2669 8.68329C10.2273 8.581 10.1678 8.48755 10.0919 8.40829L6.75862 5.07496C6.68092 4.99726 6.58868 4.93563 6.48716 4.89358C6.38564 4.85153 6.27683 4.82988 6.16695 4.82988C6.05707 4.82988 5.94826 4.85153 5.84674 4.89358C5.74522 4.93563 5.65298 4.99726 5.57528 5.07496C5.49759 5.15266 5.43595 5.2449 5.3939 5.34642C5.35185 5.44794 5.33021 5.55674 5.33021 5.66663C5.33021 5.77651 5.35185 5.88532 5.3939 5.98683C5.43595 6.08835 5.49759 6.18059 5.57528 6.25829L7.49195 8.16663H1.16695C0.945938 8.16663 0.733976 8.25442 0.577696 8.4107C0.421416 8.56698 0.333618 8.77895 0.333618 8.99996V8.99996ZM11.1669 0.666626H2.83362C2.17058 0.666626 1.53469 0.930018 1.06585 1.39886C0.59701 1.8677 0.333618 2.50358 0.333618 3.16663V5.66663C0.333618 5.88764 0.421416 6.0996 0.577696 6.25588C0.733976 6.41216 0.945938 6.49996 1.16695 6.49996C1.38797 6.49996 1.59993 6.41216 1.75621 6.25588C1.91249 6.0996 2.00028 5.88764 2.00028 5.66663V3.16663C2.00028 2.94561 2.08808 2.73365 2.24436 2.57737C2.40064 2.42109 2.6126 2.33329 2.83362 2.33329H11.1669C11.388 2.33329 11.5999 2.42109 11.7562 2.57737C11.9125 2.73365 12.0003 2.94561 12.0003 3.16663V14.8333C12.0003 15.0543 11.9125 15.2663 11.7562 15.4225C11.5999 15.5788 11.388 15.6666 11.1669 15.6666H2.83362C2.6126 15.6666 2.40064 15.5788 2.24436 15.4225C2.08808 15.2663 2.00028 15.0543 2.00028 14.8333V12.3333C2.00028 12.1123 1.91249 11.9003 1.75621 11.744C1.59993 11.5878 1.38797 11.5 1.16695 11.5C0.945938 11.5 0.733976 11.5878 0.577696 11.744C0.421416 11.9003 0.333618 12.1123 0.333618 12.3333V14.8333C0.333618 15.4963 0.59701 16.1322 1.06585 16.6011C1.53469 17.0699 2.17058 17.3333 2.83362 17.3333H11.1669C11.83 17.3333 12.4659 17.0699 12.9347 16.6011C13.4036 16.1322 13.6669 15.4963 13.6669 14.8333V3.16663C13.6669 2.50358 13.4036 1.8677 12.9347 1.39886C12.4659 0.930018 11.83 0.666626 11.1669 0.666626Z" fill="currentColor"></path>
+                  </svg>
+                </span></a>
+            </div>
+            <div class="col-12 col-sm-6">
+               
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </div>
+{% endblock content %}

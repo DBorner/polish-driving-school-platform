@@ -1,0 +1,55 @@
+{% extends 'base_course.html' %}
+
+{% block title %}Jazdy{% endblock %}
+
+{% block content %}
+        <div class="container">
+          <div class="bg-white rounded shadow overflow-hidden">
+            <div class="pt-4 pb-5 px-6 border-bottom border-secondary-light">
+              <h4 class="mb-0">Zaplanowane jazdy</h4>
+            </div>
+            <div class="px-4 table-responsive">
+              <table class="table mb-0 table-borderless table-striped small">
+                <thead>
+                  <tr class="text-secondary">
+      <th class="py-3 px-6">Kurs</th>
+      <th class="py-3 px-6">Data</th>
+      <th class="py-3 px-6">Godzina</th>
+      <th class="py-3 px-6">Instruktor</th>
+      <th class="py-3 px-6">Status</th>
+      </tr>
+                </thead>
+                <tbody>
+                {% for lesson in lessons %}
+                  <tr>
+                    <td class="py-5 px-6">{{lesson.course}}</td>
+                    <td class="py-5 px-6">{{lesson.date|date:"d.m.Y"}}</td>
+                    <td class="py-5 px-6">{{lesson.start_time|time:"G:i"}} - {{ lesson.get_end_time|time:"H:i" }}</td>
+                    <td class="py-5 px-6">{{lesson.instructor.full_name}}</td>
+                    <td class="py-5 px-6">
+                        {% if lesson.is_cancelled %}
+                      <span class="badge bg-danger">Anulowano</span>
+                      {% else %}
+                      <span class="badge bg-success">Umówiono</span>
+                      {% endif %}
+                    </td>
+                    <td class="py-4 px-6">
+                        <a href="/practical/{{lesson.id}}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewbox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M2 12.5a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5zm0-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5z"></path>
+                          </svg>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+              <div class="pt-3 pb-5 text-center">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      </div>
+        {% endblock content %}

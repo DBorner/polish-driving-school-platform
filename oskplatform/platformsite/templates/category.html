@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block header %}
+<header class="masthead" style="background-image: url({{ category.photo.url }})">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="site-heading">
+                    <h1>Kategoria {{ category.symbol }}</h1>
+                    {% if category.is_discount == True %}
+                    <span class="subheading"><s><span style="color: red">{{ category.price }} zł</span></s> {{ category.discount_price }} zł</span>
+                    {% else %}
+                    <span class="subheading">{{ category.price }} zł</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<article class="mb-4">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <p>{{ category.description }}</p>
+            </div>
+        </div>
+    </div>
+</article>
+{% endblock %}

@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import date, datetime
 
 vehicle_type_choices = [
     ('SO', 'Samochód osobowy'),
@@ -11,7 +12,8 @@ vehicle_type_choices = [
 
 gearbox_type_choices = [
     ('M', 'Manualna'),
-    ('A', 'Automatyczna')
+    ('A', 'Automatyczna'),
+    ('N', 'Nie dotyczy')
 ]
 
 class Vehicle(models.Model):
@@ -30,16 +32,16 @@ class Vehicle(models.Model):
 
 class Category(models.Model):
     symbol = models.CharField(max_length=4, primary_key=True, unique=True, null=False)
-    name = models.CharField(max_length=50, null=False)
-    description = models.CharField(max_length=255, null=False)
+    description = models.TextField(null=False)
+    required_practical_hours = models.IntegerField(null=False, default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2, null=False)
     is_discount = models.BooleanField(default=False)
     discount_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
-    photo = models.ImageField(upload_to='category_photos/', null=True, blank=True)
+    photo = models.ImageField(default='default_category.jpg', upload_to='category_photos')
     is_available = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.symbol + ' - ' + self.name
+        return self.symbol
 
 course_status_choices = [
     ('R', 'Rozpoczęty'),
@@ -58,7 +60,7 @@ class Course(models.Model):
     instructor = models.ForeignKey('users.instructor', on_delete=models.CASCADE, null=True, blank=True)
     
     def __str__(self):
-        return f'{self.id} - {self.pkk_number} ({self.course_status})'
+        return f'{self.student.full_name} ({self.category.symbol})'
     
 theory_type_choices = [
     ('T', 'Tygodniowy'),
@@ -87,4 +89,25 @@ class PracticalLesson(models.Model):
     vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE, null=True, blank=True)
     
     def __str__(self):
-        return f'{self.id} - {self.course.pkk_number} {self.date} ({self.start_time})' 
+        return f'{self.id} - {self.course.pkk_number} {self.date} ({self.start_time})'
+
+    @property
+    def has_already_happened(self):
+        return self.date < date.today() 
+    
+    @property
+    def is_paid(self):
+        return self.cost is not None
+    
+    @property
+    def get_end_time(self):
+        hour = (self.start_time.hour + self.num_of_hours) % 24
+        return datetime(year=self.date.year, month=self.date.month, day=self.date.day, hour=hour, minute=self.start_time.minute)
+    
+    @property
+    def is_number_of_km_filled(self):
+        return self.num_of_km is not None
+    
+    @property
+    def is_vehicle_filled(self):
+        return self.vehicle is not None
