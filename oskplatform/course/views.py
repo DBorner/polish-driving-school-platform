@@ -193,6 +193,24 @@ def edit_practical_lesson_view(request, practical_id):
     return HttpResponse(template.render(context, request))
 
 @login_required(login_url='/login')
+def delete_practical_lesson_view(request, practical_id):
+    if request.user.permissions_type == "S":
+        messages.error(request, 'Nie masz uprawnień do tej strony')
+        return redirect('/upcoming_lessons')
+    if not PracticalLesson.objects.filter(pk=practical_id).exists():
+        messages.error(request, 'Nie ma takiej jazdy')
+        return redirect('/upcoming_lessons')
+    lesson = PracticalLesson.objects.get(pk=practical_id)
+    if request.user.permissions_type == "I" and lesson.instructor != request.user.instructor:
+        messages.error(request, 'Nie posiadasz wymaganych uprawnień')
+        return redirect(f'/practical/{practical_id}')
+    if lesson.date < timezone.now().date():
+        messages.error(request, 'Nie można usunąć jazdy, która już się odbyła')
+        return redirect(f'/practical/{practical_id}')
+    lesson.delete()
+    return redirect('/upcoming_lessons')
+
+@login_required(login_url='/login')
 def create_practical_lesson_view(request, course_id=None):
     
     template = loader.get_template('practical_create.html')
