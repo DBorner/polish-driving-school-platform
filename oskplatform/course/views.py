@@ -50,10 +50,10 @@ def upcoming_lessons_view(request):
         all_practical_lessons.sort(key=lambda x: x.date)
     elif request.user.permissions_type == 'I':
         all_practical_lessons = PracticalLesson.objects.filter(instructor=request.user.instructor, date__gte=timezone.now())
-        all_practical_lessons = all_practical_lessons.order_by('date')
+        all_practical_lessons = all_practical_lessons.order_by('date', 'start_time')
     else:
         all_practical_lessons = PracticalLesson.objects.filter(date__gte=timezone.now())
-        all_practical_lessons = all_practical_lessons.order_by('date')
+        all_practical_lessons = all_practical_lessons.order_by('date', 'start_time')
     template = loader.get_template('upcoming_lessons.html')
     context = {
         'lessons': all_practical_lessons
@@ -98,7 +98,7 @@ def course_detail_view(request, course_id):
         messages.error(request, 'Nie ma takiego kursu')
         return redirect('/courses')
     lessons = PracticalLesson.objects.filter(course=course)
-    lessons = lessons.order_by('date')
+    lessons = lessons.order_by('date', 'start_time')
     context = {
         'course': course,
         'lessons': lessons
