@@ -5,9 +5,10 @@ from password_generator import PasswordGenerator
 from users.models import CustomUser, Student, Employee, Instructor, Qualification
 from course.models import PracticalLesson, Course, Category, Vehicle
 from django.utils import timezone
-from course.forms import NewStudentForm, SetPasswordForm, EditPracticalLessonForm, CreatePracticalLessonForm
+from course.forms import NewStudentForm, SetPasswordForm, EditPracticalLessonForm, CreatePracticalLessonForm, CreateCourseForm
 from django.contrib import messages
 from django.shortcuts import redirect
+from course.utils import check_instructor_qualifications
 
 @login_required(login_url='/login')
 def panel_view(request):
@@ -276,6 +277,60 @@ def create_practical_lesson_view(request, course_id=None):
         'courses': courses
     }
     
+    return HttpResponse(template.render(context, request))
+
+@login_required(login_url='/login')
+def create_course_view(request, student_id=None):
+    
+    template = loader.get_template('course_create.html')
+    if request.user.permissions_type not in {'A', 'E'}:
+        messages.error(request, 'Nie masz uprawnień do tej strony')
+        return redirect('/upcoming_lessons')
+    if student_id != None:
+        if not Student.objects.filter(pk=student_id).exists():
+            messages.error(request, 'Nie ma takiego kursanta')
+            return redirect('/register_student')
+        selected_student = Student.objects.get(pk=student_id)
+    
+    if request.method == 'POST':
+        form = CreateCourseForm(request.POST)
+        if form.is_valid() and check_instructor_qualifications(form.cleaned_data['instructor'], form.cleaned_data['category']):
+            Course.objects.create(
+                pkk_number=form.cleaned_data['pkk_number'],
+                cost=form.cleaned_data['cost'],
+                category=form.cleaned_data['category'],
+                student=form.cleaned_data['student'],
+                instructor=form.cleaned_data['instructor'],
+                course_status='R',
+                start_date=timezone.now()
+            )
+            messages.success(request, 'Dodano nowy kurs')
+            return redirect('/courses')
+        else:
+            messages.error(request, 'Wprowadzono niepoprawne dane')
+            if student_id:
+                return redirect(f'/courses/create/{student_id}')
+            else:
+                return redirect('/courses/create')
+    
+    categories = Category.objects.filter(is_available=True)
+    
+    instructors = [None]
+    for instructor in Instructor.objects.filter(is_active=True):
+        instructors.append(instructor)
+        
+    students = []
+    for student in Student.objects.all():
+        students.append(student)
+    if student_id != None:
+        students.remove(selected_student)
+        students.insert(0, selected_student)
+        
+    context = {
+        'instructors': instructors,
+        'students': students,
+        'categories': categories
+    }
     return HttpResponse(template.render(context, request))
 
 @login_required(login_url='/login')

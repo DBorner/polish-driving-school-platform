@@ -1,8 +1,8 @@
 from django import forms
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import get_user_model
-from users.models import Instructor
-from course.models import Vehicle, Course
+from users.models import Instructor, Student
+from course.models import Vehicle, Course, Category
 
 
 class NewStudentForm(forms.Form):
@@ -37,3 +37,11 @@ class CreatePracticalLessonForm(forms.Form):
     num_of_km = forms.IntegerField(label='Liczba kilometrów', required=False, min_value=0)
     cost = forms.DecimalField(max_digits=10, decimal_places=2, label='Koszt', required=False, min_value=0)
     vehicle = forms.ModelChoiceField(queryset=Vehicle.objects.filter(is_available="True"), label='Pojazd', required=False)
+
+
+class CreateCourseForm(forms.Form):
+    pkk_number = forms.CharField(max_length=20, min_length=20, label='Numer PKK')
+    cost = forms.DecimalField(max_digits=10, decimal_places=2, label='Koszt')
+    category = forms.ModelChoiceField(queryset=Category.objects.filter(is_available='True'), label='Kategoria')
+    student = forms.ModelChoiceField(queryset=Student.objects.all(), label='Kursant')
+    instructor = forms.ModelChoiceField(queryset=Instructor.objects.filter(is_active='True'), label='Instruktor', required=False)

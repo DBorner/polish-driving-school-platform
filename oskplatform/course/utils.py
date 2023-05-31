@@ -1,6 +1,16 @@
-from .models import TheoryCourse
+from .models import TheoryCourse 
+from users.models import Qualification, Instructor
 import datetime
 
+def check_instructor_qualifications(instructor, category):
+    if category == None or instructor == None:
+        return True
+    qualifications = Qualification.objects.filter(instructor=instructor)
+    for qualification in qualifications:
+        if qualification.category == category:
+            return True
+    return False
+    
 
 def get_course_dates(theory_id):
     course = TheoryCourse.objects.get(pk=theory_id)

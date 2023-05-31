@@ -20,6 +20,8 @@ urlpatterns = [
     path('profile_settings/', course_views.profile_settings_view),
     path('courses/', course_views.courses_view),
     path('courses/<int:course_id>/', course_views.course_detail_view),
+    path('courses/create/', course_views.create_course_view),
+    path('courses/create/<int:student_id>/', course_views.create_course_view),
     path('practical/<int:practical_id>/', course_views.practical_detail_view),
     path('practical/<int:practical_id>/change_status/', course_views.change_practical_lesson_status_view),
     path('practical/<int:practical_id>/edit/', course_views.edit_practical_lesson_view),

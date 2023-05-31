@@ -62,6 +62,10 @@ class Course(models.Model):
     def __str__(self):
         return f'{self.student.full_name} ({self.category.symbol})'
     
+    @property
+    def is_instructor_assigned(self):
+        return self.instructor is not None
+    
 theory_type_choices = [
     ('T', 'Tygodniowy'),
     ('W', 'Weekendowy'),
