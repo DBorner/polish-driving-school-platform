@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from course.models import Course
 
 class Student(models.Model):
     id = models.AutoField(primary_key=True)
@@ -15,6 +16,13 @@ class Student(models.Model):
     @property
     def full_name(self):
         return f'{self.surname} {self.name}'
+    
+    @property
+    def is_active(self):
+        if Course.objects.filter(student=self, status='R').exists():
+            return True
+        else:
+            return False
     
 class Instructor(models.Model):
     id = models.AutoField(primary_key=True)

@@ -374,6 +374,18 @@ def edit_course_view(request, course_id):
     return HttpResponse(template.render(context, request))
 
 @login_required(login_url='/login')
+def students_view(request):
+    template = loader.get_template('students.html')
+    if request.user.permissions_type not in {'A', 'E'}:
+        messages.error(request, 'Nie masz uprawnień do tej strony')
+        return redirect('/upcoming_lessons')
+    students = Student.objects.all()
+    context = {
+        'students': students
+    }
+    return HttpResponse(template.render(context, request))
+
+@login_required(login_url='/login')
 def register_student_view(request):
     template = loader.get_template('register_student.html')
     if request.user.permissions_type not in {'A', 'E'} :
