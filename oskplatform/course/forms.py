@@ -45,3 +45,13 @@ class CreateCourseForm(forms.Form):
     category = forms.ModelChoiceField(queryset=Category.objects.filter(is_available='True'), label='Kategoria')
     student = forms.ModelChoiceField(queryset=Student.objects.all(), label='Kursant')
     instructor = forms.ModelChoiceField(queryset=Instructor.objects.filter(is_active='True'), label='Instruktor', required=False)
+    
+
+class EditCourseForm(forms.Form):
+    instructor = forms.ModelChoiceField(queryset=Instructor.objects.filter(is_active='True'), label='Instruktor', required=False)
+    course_status_choices = [
+        ('R', 'Rozpoczęty'),
+        ('Z', 'Zakończony'),
+        ('A', 'Anulowany'),
+    ]
+    status = forms.ChoiceField(choices=course_status_choices, label='Status kursu')

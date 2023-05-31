@@ -68,7 +68,7 @@
                 {% if user.permissions_type == "I" %}
                 <a class="btn btn-primary" href="/practical/create/{{course.id}}">Umów jazdę</a>
                 {% elif user.permissions_type == "E" or user.permissions_type == "A" %}
-                <a class="btn btn-primary" href="/course/edit/{{course.id}}">Edytuj kurs</a>
+                <a class="btn btn-primary" href="/courses/{{course.id}}/edit">Edytuj kurs</a>
                 {% endif %}
             </div>
 

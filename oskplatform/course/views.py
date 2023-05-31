@@ -5,7 +5,7 @@ from password_generator import PasswordGenerator
 from users.models import CustomUser, Student, Employee, Instructor, Qualification
 from course.models import PracticalLesson, Course, Category, Vehicle
 from django.utils import timezone
-from course.forms import NewStudentForm, SetPasswordForm, EditPracticalLessonForm, CreatePracticalLessonForm, CreateCourseForm
+from course.forms import NewStudentForm, SetPasswordForm, EditPracticalLessonForm, CreatePracticalLessonForm, CreateCourseForm, EditCourseForm
 from django.contrib import messages
 from django.shortcuts import redirect
 from course.utils import check_instructor_qualifications
@@ -330,6 +330,46 @@ def create_course_view(request, student_id=None):
         'instructors': instructors,
         'students': students,
         'categories': categories
+    }
+    return HttpResponse(template.render(context, request))
+
+@login_required(login_url='/login')
+def edit_course_view(request, course_id):
+    
+    template = loader.get_template('course_edit.html')
+    if request.user.permissions_type not in {'A', 'E'}:
+        messages.error(request, 'Nie masz uprawnień do tej strony')
+        return redirect('/courses')
+    if not Course.objects.filter(pk=course_id).exists():
+        messages.error(request, 'Nie ma takiego kursu')
+        return redirect('/courses')
+    
+    if request.method == 'POST':
+        print(request.POST)
+        form = EditCourseForm(request.POST)
+        if form.is_valid() and check_instructor_qualifications(form.cleaned_data['instructor'], Course.objects.get(pk=course_id).category):
+            course = Course.objects.get(pk=course_id)
+            course.instructor = form.cleaned_data['instructor']
+            course.course_status = form.cleaned_data['status']
+            course.save()
+            messages.success(request, 'Zmieniono dane kursu')
+            return redirect(f'/courses/{course_id}')
+        else:
+            messages.error(request, 'Wprowadzono niepoprawne dane')
+            return redirect(f'/courses/{course_id}/edit')
+            
+    course = Course.objects.get(pk=course_id)
+    instructors = []
+    for instructor in Instructor.objects.filter(is_active=True):
+        instructors.append(instructor)
+    if course.instructor != None:
+        instructors.remove(course.instructor)
+        instructors.insert(0, course.instructor)
+    else:
+        instructors.insert(0, None)
+    context = {
+        'course': course,
+        'instructors': instructors
     }
     return HttpResponse(template.render(context, request))
 
