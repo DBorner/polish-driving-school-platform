@@ -17,13 +17,6 @@ class Student(models.Model):
     def full_name(self):
         return f'{self.surname} {self.name}'
     
-    @property
-    def is_active(self):
-        if Course.objects.filter(student=self, status='R').exists():
-            return True
-        else:
-            return False
-    
 class Instructor(models.Model):
     id = models.AutoField(primary_key=True)
     surname = models.CharField(max_length=50, null=False)
