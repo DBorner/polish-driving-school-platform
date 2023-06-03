@@ -10,6 +10,7 @@ from course.forms import (
     CreatePracticalLessonForm,
     CreateCourseForm,
     EditCourseForm,
+    EditStudentForm
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -94,7 +95,7 @@ class CoursesView(View):
     template = loader.get_template("courses.html")
 
     @method_decorator(requires_permissions(permission_type=["S", "I", "E", "A"]))
-    def get(self, request, *args, **kwargs):
+    def get(self, request, student_id=None, *args, **kwargs):
         if request.user.permissions_type == "S":
             user_courses = Course.objects.filter(student=request.user.student)
         elif request.user.permissions_type == "I":
@@ -102,7 +103,10 @@ class CoursesView(View):
                 instructor=request.user.instructor, course_status="R"
             )
         else:
-            user_courses = Course.objects.all()
+            if student_id:
+                user_courses = Course.objects.filter(student_id=student_id)
+            else:
+                user_courses = Course.objects.all()
             user_courses = user_courses.order_by("course_status")
         data = []
         for course in user_courses:
@@ -556,3 +560,28 @@ def generate_new_password_for_student_view(request, student_id):
                          Hasło: {password}""",
         )
     return redirect("/students")
+
+class EditStudentView(View):
+    template = loader.get_template("student_edit.html")
+    
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def get(self, request, student_id):
+        student = get_object_or_404(Student, pk=student_id)
+        context = {"student": student}
+        return HttpResponse(self.template.render(context, request))
+    
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def post(self, request, student_id):
+        form = EditStudentForm(request.POST)
+        if form.is_valid():
+            student = get_object_or_404(Student, pk=student_id)
+            student.surname = request.POST.get("surname")
+            student.name = request.POST.get("name")
+            student.birth_date = request.POST.get("birth_date")
+            student.phone_number = request.POST.get("phone_number")
+            student.email = request.POST.get("email")
+            student.save()
+            messages.success(request, "Zapisano zmiany")
+            return redirect(f"/students")
+        messages.error(request, "Wprowadzono niepoprawne dane")
+        return redirect(f"/students/{student_id}/edit")
