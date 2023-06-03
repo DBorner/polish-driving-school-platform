@@ -8,11 +8,11 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('category/<str:category_id>/', platform_views.category),
-    path('vehicles/', platform_views.vehicles),
-    path('instructors/', platform_views.instructors),
-    path('theorys/', platform_views.theorys),
-    path('login/', user_views.login_view),
+    path('category/<str:category_id>/', platform_views.CategoryView.as_view()),
+    path('vehicles/', platform_views.VehiclesView.as_view()),
+    path('instructors/', platform_views.InstructorsView.as_view()),
+    path('theorys/', platform_views.TheorysView.as_view()),
+    path('login/', user_views.LoginView.as_view()),
     path('logout/', user_views.logout_view),
     path('panel/', course_views.panel_view),
     path('students/', course_views.students_view, name='students'),
@@ -30,5 +30,5 @@ urlpatterns = [
     path('practical/<int:practical_id>/delete/', course_views.delete_practical_lesson_view),
     path('practical/create/', course_views.create_practical_lesson_view),
     path('practical/create/<int:course_id>/', course_views.create_practical_lesson_view),
-    path('', platform_views.home),
+    path('', platform_views.HomeView.as_view(), name='home'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
