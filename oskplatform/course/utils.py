@@ -1,5 +1,6 @@
 from .models import TheoryCourse 
-from users.models import Qualification, Instructor
+from users.models import Qualification, Instructor, Student
+from course.models import Course
 import datetime
 
 def check_instructor_qualifications(instructor, category):
@@ -36,3 +37,8 @@ def get_course_dates(theory_id):
         dates.append((course.start_date + datetime.timedelta(days=7), ('8:00', '16:00')))
         dates.append((course.start_date + datetime.timedelta(days=8), ('9:00', '16:00')))
         return dates
+    
+def is_student_active(student: Student):
+    if Course.objects.filter(student=student, course_status='R').exists():
+        return True
+    return False

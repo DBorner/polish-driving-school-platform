@@ -8,7 +8,8 @@ from django.utils import timezone
 from course.forms import NewStudentForm, SetPasswordForm, EditPracticalLessonForm, CreatePracticalLessonForm, CreateCourseForm, EditCourseForm
 from django.contrib import messages
 from django.shortcuts import redirect
-from course.utils import check_instructor_qualifications
+from course.utils import check_instructor_qualifications, is_student_active
+from django.db.models import Q
 
 @login_required(login_url='/login')
 def panel_view(request):
@@ -379,7 +380,23 @@ def students_view(request):
     if request.user.permissions_type not in {'A', 'E'}:
         messages.error(request, 'Nie masz uprawnień do tej strony')
         return redirect('/upcoming_lessons')
-    students = Student.objects.all()
+    if request.GET.get('q') != None:
+        query = request.GET.get('q')
+        students = Student.objects.filter(Q(name__icontains=query) | Q(surname__icontains=query))
+        if request.GET.get('status') == 'active':
+            temp_students = []
+            for student in students:
+                if is_student_active(student):
+                    temp_students.append(student)
+            students = temp_students
+        elif request.GET.get('status') == 'inactive':
+            temp_students = []
+            for student in students:
+                if not is_student_active(student):
+                    temp_students.append(student)
+            students = temp_students
+    else:
+        students = Student.objects.all()
     context = {
         'students': students
     }
