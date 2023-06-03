@@ -63,7 +63,7 @@ def is_student_active(student: Student):
     return False
 
 
-def requres_permissions(
+def requires_permissions(
     permission_type: list() = ["S"],
     redirect_url="/",
     redirect_message="Nie posiadasz wystarczająch uprawnień do wykonania tej akcji",

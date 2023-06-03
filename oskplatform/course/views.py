@@ -16,7 +16,7 @@ from django.shortcuts import redirect, get_object_or_404
 from course.utils import (
     check_instructor_qualifications,
     is_student_active,
-    requres_permissions,
+    requires_permissions,
     generate_password,
 )
 from django.db.models import Q
@@ -27,7 +27,7 @@ from django.utils.decorators import method_decorator
 class PanelView(View):
     template_name = "panel.html"
 
-    @requres_permissions(permission_type=["E", "A"])
+    @requires_permissions(permission_type=["E", "A"])
     def get(self, request):
         return HttpResponse(request, self.template_name)
 
@@ -36,7 +36,7 @@ class ProfileSettingsView(View):
     template = loader.get_template("profile_settings.html")
 
     @method_decorator(
-        requres_permissions(
+        requires_permissions(
             permission_type=["S", "I", "E", "A"],
             redirect_url="/login",
             redirect_message="Musisz być zalogowanym",
@@ -57,7 +57,7 @@ class ProfileSettingsView(View):
 class UpcomingLessonsView(View):
     template = loader.get_template("upcoming_lessons.html")
 
-    @method_decorator(requres_permissions(permission_type=["S", "I", "E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["S", "I", "E", "A"]))
     def get(self, request, *args, **kwargs):
         all_practical_lessons = []
         if request.user.permissions_type == "S":
@@ -93,7 +93,7 @@ class UpcomingLessonsView(View):
 class CoursesView(View):
     template = loader.get_template("courses.html")
 
-    @method_decorator(requres_permissions(permission_type=["S", "I", "E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["S", "I", "E", "A"]))
     def get(self, request, *args, **kwargs):
         if request.user.permissions_type == "S":
             user_courses = Course.objects.filter(student=request.user.student)
@@ -133,7 +133,7 @@ class CoursesView(View):
 class CourseDetailView(View):
     template = loader.get_template("course_detail.html")
 
-    @method_decorator(requres_permissions(permission_type=["S", "I", "E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["S", "I", "E", "A"]))
     def get(self, request, course_id, *args, **kwargs):
         course = get_object_or_404(Course, pk=course_id)
 
@@ -153,7 +153,7 @@ class CourseDetailView(View):
 class PracticalDetailView(View):
     template = loader.get_template("practical_detail.html")
 
-    @method_decorator(requres_permissions(permission_type=["S", "I", "E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["S", "I", "E", "A"]))
     def get(self, request, practical_id, *args, **kwargs):
         lesson = get_object_or_404(PracticalLesson, pk=practical_id)
 
@@ -168,7 +168,7 @@ class PracticalDetailView(View):
         return HttpResponse(self.template.render(context, request))
 
 
-@requres_permissions(permission_type=["I", "E", "A"])
+@requires_permissions(permission_type=["I", "E", "A"])
 def change_practical_lesson_status_view(request, practical_id):
     lesson = get_object_or_404(PracticalLesson, pk=practical_id)
     if (
@@ -185,7 +185,7 @@ def change_practical_lesson_status_view(request, practical_id):
     return redirect(f"/practical/{practical_id}")
 
 
-@requres_permissions(permission_type=["I", "E", "A"])
+@requires_permissions(permission_type=["I", "E", "A"])
 def delete_practical_lesson_view(request, practical_id):
     lesson = get_object_or_404(PracticalLesson, pk=practical_id)
     if (
@@ -213,7 +213,7 @@ class EditPracticalLessonView(View):
             return False
         return True
 
-    @method_decorator(requres_permissions(permission_type=["I", "E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["I", "E", "A"]))
     def get(self, request, practical_id, *args, **kwargs):
         lesson = get_object_or_404(PracticalLesson, pk=practical_id)
         if self._check_instructor_permissions(request, lesson) == False:
@@ -237,7 +237,7 @@ class EditPracticalLessonView(View):
         context = {"lesson": lesson, "vehicles": vehicles, "instructors": instructors}
         return HttpResponse(template.render(context, request))
 
-    @method_decorator(requres_permissions(permission_type=["I", "E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["I", "E", "A"]))
     def post(self, request, practical_id, *args, **kwargs):
         lesson = get_object_or_404(PracticalLesson, pk=practical_id)
         if self._check_instructor_permissions(request, lesson) == False:
@@ -262,7 +262,7 @@ class EditPracticalLessonView(View):
 class CreatePracticalLessonView(View):
     template = loader.get_template("practical_create.html")
 
-    @method_decorator(requres_permissions(permission_type=["I"]))
+    @method_decorator(requires_permissions(permission_type=["I"]))
     def get(self, request, course_id=None, *args, **kwargs):
         instructor_qualifications = []
         for qualification in Qualification.objects.filter(
@@ -306,7 +306,7 @@ class CreatePracticalLessonView(View):
 
         return HttpResponse(self.template.render(context, request))
 
-    @method_decorator(requres_permissions(permission_type=["I"]))
+    @method_decorator(requires_permissions(permission_type=["I"]))
     def post(self, request, course_id=None, *args, **kwargs):
         form = CreatePracticalLessonForm(request.POST)
         if form.is_valid():
@@ -345,7 +345,7 @@ class CreatePracticalLessonView(View):
 class CreateCourseView(View):
     template = loader.get_template("course_create.html")
 
-    @method_decorator(requres_permissions(permission_type=["E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def get(self, request, student_id=None):
         if student_id != None:
             selected_student = get_object_or_404(Student, pk=student_id)
@@ -370,7 +370,7 @@ class CreateCourseView(View):
         }
         return HttpResponse(self.template.render(context, request))
 
-    @method_decorator(requres_permissions(permission_type=["E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def post(self, request, student_id):
         form = CreateCourseForm(request.POST)
         if form.is_valid() and check_instructor_qualifications(
@@ -398,7 +398,7 @@ class CreateCourseView(View):
 class EditCourseView(View):
     template = loader.get_template("course_edit.html")
 
-    @method_decorator(requres_permissions(permission_type=["E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def get(self, request, course_id):
         course = get_object_or_404(Course, pk=course_id)
         instructors = []
@@ -412,7 +412,7 @@ class EditCourseView(View):
         context = {"course": course, "instructors": instructors}
         return HttpResponse(self.template.render(context, request))
 
-    @method_decorator(requres_permissions(permission_type=["E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def post(self, request, course_id):
         form = EditCourseForm(request.POST)
         if form.is_valid() and check_instructor_qualifications(
@@ -432,7 +432,7 @@ class EditCourseView(View):
 class StudentsView(View):
     template = loader.get_template("students.html")
 
-    @method_decorator(requres_permissions(permission_type=["E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def get(self, request):
         if request.GET.get("q") != None:
             students = self._search_results(request)
@@ -464,11 +464,11 @@ class StudentsView(View):
 class RegisterStudentView(View):
     template = loader.get_template("register_student.html")
 
-    @method_decorator(requres_permissions(permission_type=["E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def get(self, request):
         return HttpResponse(self.template.render({}, request))
 
-    @method_decorator(requres_permissions(permission_type=["E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def post(self, request):
         form = NewStudentForm(request.POST)
         if form.is_valid():
@@ -505,3 +505,54 @@ class RegisterStudentView(View):
                          Hasło: {password}""",
         )
         return redirect("/students")
+
+
+@requires_permissions(permission_type=["E", "A"])
+def create_account_for_student_view(request, student_id):
+    student = get_object_or_404(Student, pk=student_id)
+    if CustomUser.objects.filter(student=student).exists():
+        messages.error(request, "Konto dla tego kursanta już istnieje")
+        return redirect(f"/students/{student_id}")
+    next_user_id = CustomUser.objects.order_by("-pk")[0].pk + 1
+    username = f"{student.surname.lower()[:3]}{student.name.lower()[:3]}{next_user_id}"
+    password = generate_password()
+    user = CustomUser.objects.create_user(
+        username=username,
+        password=password,
+        permissions_type="S",
+        student=student,
+    )
+    user.save()
+    messages.success(
+            request,
+            f"""Utworzono konto dla kursanta {student.full_name} - dane logowania:
+                         Login: {username}
+                         Hasło: {password}""",
+        )
+    return redirect("/students")
+
+@requires_permissions(permission_type=["E", "A"])
+def delete_account_of_student_view(request, student_id):
+    student = get_object_or_404(Student, pk=student_id)
+    user = get_object_or_404(CustomUser, student=student)
+    user.delete()
+    messages.success(
+            request,
+            f"""Usunięto konto kursanta {student.full_name}""",
+        )
+    return redirect("/students")
+
+@requires_permissions(permission_type=["E", "A"])
+def generate_new_password_for_student_view(request, student_id):
+    student = get_object_or_404(Student, pk=student_id)
+    user = get_object_or_404(CustomUser, student=student)
+    password = generate_password()
+    user.set_password(password)
+    user.save()
+    messages.success(
+            request,
+            f"""Wygenerowano nowe hasło dla kursanta {student.full_name} - dane logowania:
+                         Login: {user.username}
+                         Hasło: {password}""",
+        )
+    return redirect("/students")
