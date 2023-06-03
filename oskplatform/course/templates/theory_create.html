@@ -1,6 +1,6 @@
 {% extends 'base_course.html' %}
 
-{% block title %}Tworzenie nowego kursu{% endblock %}
+{% block title %}Tworzenie nowego kursu teoretycznego{% endblock %}
 
 {% block content %}
 <div>
@@ -16,16 +16,16 @@
             <div class="d-flex mb-4 align-items-center justify-content-between">
                 <div class="d-flex align-items-center">
                   <span class="me-2 d-inline-block">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
-                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-heading" viewBox="0 0 16 16">
+                        <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
+                        <path d="M3 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0-5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-1z"/>
                       </svg>
                   </span>
-                  <span class="small text-secondary">Kursant</span>
+                  <span class="small text-secondary">Typ kursu</span>
                 </div>
-                <span class="small"><select name="student">
-                    {% for student in students %}
-                    <option value={{student.id}}>{{student.full_name}}</option>
-                    {% endfor %}
+                <span class="small"><select name="type">
+                    <option value='T'>Tygodniowy</option>
+                    <option value='W'>Weekendowy</option>
                   </select></span>
               </div>
             
@@ -37,39 +37,9 @@
                     <path d="M9.293 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V4.707A1 1 0 0 0 13.707 4L10 .293A1 1 0 0 0 9.293 0zM9.5 3.5v-2l3 3h-2a1 1 0 0 1-1-1zM4.5 9a.5.5 0 0 1 0-1h7a.5.5 0 0 1 0 1h-7zM4 10.5a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5zm.5 2.5a.5.5 0 0 1 0-1h4a.5.5 0 0 1 0 1h-4z"/>
                   </svg>
               </span>
-              <span class="small text-secondary">Numer PKK</span>
+              <span class="small text-secondary">Data pierwszych zajęć</span>
             </div>
-            <span class="small"><input class="form-control" type="string" name="pkk_number" placeholder="Numer PKK" id=""></span>
-          </div>
-
-          <div class="d-flex mb-4 align-items-center justify-content-between">
-            <div class="d-flex align-items-center">
-              <span class="me-2 d-inline-block">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cash" viewBox="0 0 16 16">
-                    <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
-                    <path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V4zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2H3z"/>
-                  </svg>
-              </span>
-              <span class="small text-secondary">Koszt</span>
-            </div>
-            <span class="small"><input class="form-control" type="number" name="cost" id="" placeholder="np 3000">
-          </div>
-
-          <div class="d-flex mb-4 align-items-center justify-content-between">
-            <div class="d-flex align-items-center">
-              <span class="me-2 d-inline-block">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-card-heading" viewBox="0 0 16 16">
-                    <path d="M14.5 3a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-13a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h13zm-13-1A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h13a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-13z"/>
-                    <path d="M3 8.5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 0 1h-9a.5.5 0 0 1-.5-.5zm0 2a.5.5 0 0 1 .5-.5h6a.5.5 0 0 1 0 1h-6a.5.5 0 0 1-.5-.5zm0-5a.5.5 0 0 1 .5-.5h9a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5v-1z"/>
-                  </svg>
-              </span>
-              <span class="small text-secondary">Kategoria</span>
-            </div>
-            <span class="small"><select name="category">
-                {% for category in categories %}
-                <option value={{category.symbol}}>{{category.symbol}} - {{category.price}} zł</option>
-                {% endfor %}
-              </select></span>
+            <span class="small"><input class="form-control" type="date" name="start_date" id="" value={% now "Y-m-d" %}></span>
           </div>
 
           <div class="d-flex mb-4 align-items-center justify-content-between">

@@ -1,5 +1,7 @@
 from django.db import models
 from datetime import date, datetime
+from django.db.models.constraints import CheckConstraint
+from django.db.models import Q
 
 vehicle_type_choices = [
     ('SO', 'Samochód osobowy'),
@@ -72,9 +74,13 @@ theory_type_choices = [
 ]
     
 class TheoryCourse(models.Model):
+    class Meta:
+        unique_together = (('type', 'start_date'))
+        constraints = [CheckConstraint(check=Q(start_date__gte=date.today()), name='start_date_gte_today')]
+    
     id = models.AutoField(primary_key=True)
     type = models.CharField(max_length=1, choices=theory_type_choices, default='T', null=False)
-    start_date = models.DateField(null=False)
+    start_date = models.DateField()
     instructor = models.ForeignKey('users.instructor', on_delete=models.CASCADE, null=False)
     
     def __str__(self):

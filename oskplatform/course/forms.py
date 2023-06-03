@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import get_user_model
 from users.models import Instructor, Student
-from course.models import Vehicle, Course, Category
+from course.models import Vehicle, Course, Category, TheoryCourse
 
 
 class NewStudentForm(forms.Form):
@@ -95,3 +95,10 @@ class EditCourseForm(forms.Form):
         ("A", "Anulowany"),
     ]
     status = forms.ChoiceField(choices=course_status_choices, label="Status kursu")
+
+
+class NewTheoryForm(forms.ModelForm):
+    
+    class Meta:
+        model = TheoryCourse
+        fields = ["type", "start_date", "instructor"]

@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required
 from users.models import CustomUser, Student, Instructor, Qualification
-from course.models import PracticalLesson, Course, Category, Vehicle
+from course.models import PracticalLesson, Course, Category, Vehicle, TheoryCourse
 from django.utils import timezone
 from course.forms import (
     NewStudentForm,
@@ -10,7 +10,8 @@ from course.forms import (
     CreatePracticalLessonForm,
     CreateCourseForm,
     EditCourseForm,
-    EditStudentForm
+    EditStudentForm,
+    NewTheoryForm,
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -23,6 +24,7 @@ from course.utils import (
 from django.db.models import Q
 from django.views import View
 from django.utils.decorators import method_decorator
+from datetime import datetime, date
 
 
 class PanelView(View):
@@ -528,12 +530,13 @@ def create_account_for_student_view(request, student_id):
     )
     user.save()
     messages.success(
-            request,
-            f"""Utworzono konto dla kursanta {student.full_name} - dane logowania:
+        request,
+        f"""Utworzono konto dla kursanta {student.full_name} - dane logowania:
                          Login: {username}
                          Hasło: {password}""",
-        )
+    )
     return redirect("/students")
+
 
 @requires_permissions(permission_type=["E", "A"])
 def delete_account_of_student_view(request, student_id):
@@ -541,10 +544,11 @@ def delete_account_of_student_view(request, student_id):
     user = get_object_or_404(CustomUser, student=student)
     user.delete()
     messages.success(
-            request,
-            f"""Usunięto konto kursanta {student.full_name}""",
-        )
+        request,
+        f"""Usunięto konto kursanta {student.full_name}""",
+    )
     return redirect("/students")
+
 
 @requires_permissions(permission_type=["E", "A"])
 def generate_new_password_for_student_view(request, student_id):
@@ -554,22 +558,23 @@ def generate_new_password_for_student_view(request, student_id):
     user.set_password(password)
     user.save()
     messages.success(
-            request,
-            f"""Wygenerowano nowe hasło dla kursanta {student.full_name} - dane logowania:
+        request,
+        f"""Wygenerowano nowe hasło dla kursanta {student.full_name} - dane logowania:
                          Login: {user.username}
                          Hasło: {password}""",
-        )
+    )
     return redirect("/students")
+
 
 class EditStudentView(View):
     template = loader.get_template("student_edit.html")
-    
+
     @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def get(self, request, student_id):
         student = get_object_or_404(Student, pk=student_id)
         context = {"student": student}
         return HttpResponse(self.template.render(context, request))
-    
+
     @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def post(self, request, student_id):
         form = EditStudentForm(request.POST)
@@ -585,3 +590,37 @@ class EditStudentView(View):
             return redirect(f"/students")
         messages.error(request, "Wprowadzono niepoprawne dane")
         return redirect(f"/students/{student_id}/edit")
+
+
+class CreateTheoryView(View):
+    template = loader.get_template("theory_create.html")
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def get(self, request):
+        instructors = Instructor.objects.filter(is_active=True)
+        context = {"instructors": instructors}
+        return HttpResponse(self.template.render(context, request))
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def post(self, request):
+        form = NewTheoryForm(request.POST)
+        if form.is_valid() and self._check_start_date(
+            form.cleaned_data["start_date"], form.cleaned_data["type"]
+        ):
+            theory = TheoryCourse.objects.create(
+                type=form.cleaned_data["type"],
+                start_date=form.cleaned_data["start_date"],
+                instructor=form.cleaned_data["instructor"],
+            )
+            theory.save()
+            messages.success(request, "Dodano nowy wykład")
+            return redirect("/theorie")
+        messages.error(request, "Wprowadzono niepoprawne dane")
+        return redirect("/theory/create")
+
+    def _check_start_date(self, start_date, type):
+        if date.strftime(start_date, "%A") == "Monday" and type == "T":
+            return True
+        elif date.strftime(start_date, "%A") == "Saturday" and type == "W":
+            return True
+        return False
