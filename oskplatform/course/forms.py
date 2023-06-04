@@ -109,7 +109,7 @@ class TheoryEditForm(forms.ModelForm):
         fields = ["type", "start_date", "instructor"]
 
 
-class CreateVehicleForm(forms.ModelForm):
+class VehicleForm(forms.ModelForm):
     class Meta:
         model = Vehicle
         fields = [

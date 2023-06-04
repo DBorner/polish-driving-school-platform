@@ -13,7 +13,7 @@ from course.forms import (
     EditStudentForm,
     NewTheoryForm,
     TheoryEditForm,
-    CreateVehicleForm,
+    VehicleForm,
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -756,7 +756,7 @@ class CreateVehicleView(View):
 
     @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def post(self, request):
-        form = CreateVehicleForm(request.POST)
+        form = VehicleForm(request.POST)
         if form.is_valid():
             vehicle = Vehicle(
                 registration_number=form.cleaned_data["registration_number"],
@@ -773,6 +773,34 @@ class CreateVehicleView(View):
         else:
             messages.error(request, "Wprowadzono niepoprawne dane")
             return redirect("/vehicle/create")
+
+
+class EditVehicleView(View):
+    template = loader.get_template("vehicle_edit.html")
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def get(self, request, vehicle_id):
+        vehicle = get_object_or_404(Vehicle, pk=vehicle_id)
+        context = {"vehicle": vehicle}
+        return HttpResponse(self.template.render(context, request))
+    
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def post(self, request, vehicle_id):
+        vehicle = get_object_or_404(Vehicle, pk=vehicle_id)
+        form = VehicleForm(request.POST)
+        if form.is_valid():
+            vehicle.registration_number = form.cleaned_data["registration_number"]
+            vehicle.brand = form.cleaned_data["brand"]
+            vehicle.model = form.cleaned_data["model"]
+            vehicle.year_of_production = form.cleaned_data["year_of_production"]
+            vehicle.gearbox_type = form.cleaned_data["gearbox_type"]
+            vehicle.type = form.cleaned_data["type"]
+            vehicle.save()
+            messages.success(request, "Zapisano zmiany")
+            return redirect("/vehicles")
+        else:
+            messages.error(request, "Wprowadzono niepoprawne dane")
+            return redirect(f"/vehicle/{vehicle_id}/edit")
 
 
 @requires_permissions(permission_type=["E", "A"])
