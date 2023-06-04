@@ -52,6 +52,7 @@ urlpatterns = [
     path('category/<str:category_symbol>/change_status', course_views.change_category_availability_view),
     path('instructors/', course_views.InstructorsView.as_view(), name='instructors'),
     path('instructor/<int:instructor_id>/change_status/', course_views.change_instructor_availability_view),
+    path('instructors/<int:instructor_id>/edit/', course_views.EditInstructorView.as_view()),
     path('qualifications/<int:instructor_id>/', course_views.QualificationsView.as_view()),
     path('qualification/<int:instructor_id>/add/', course_views.CreateQualificationView.as_view()),
     path('qualification/<int:qualification_id>/delete/', course_views.delete_qualification_view),

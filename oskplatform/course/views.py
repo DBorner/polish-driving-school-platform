@@ -18,7 +18,7 @@ from course.forms import (
     EditCategoryForm,
     CreateQualificationForm,
     NewPasswordForm,
-    NewInstructorForm,
+    InstructorForm,
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -986,7 +986,7 @@ class RegisterInstructorView(View):
 
     @method_decorator(requires_permissions(permission_type=["A"]))
     def post(self, request):
-        form = NewInstructorForm(request.POST)
+        form = InstructorForm(request.POST)
         if form.is_valid():
             instructor = form.save(commit=False)
             instructor.is_active = True
@@ -1011,6 +1011,28 @@ class RegisterInstructorView(View):
         else:
             messages.error(request, "Wprowadzono niepoprawne dane")
             return redirect("/register_instructor/")
+
+
+class EditInstructorView(View):
+    template = loader.get_template("instructor_edit.html")
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def get(self, request, instructor_id):
+        instructor = get_object_or_404(Instructor, pk=instructor_id)
+        context = {"instructor": instructor}
+        return HttpResponse(self.template.render(context, request))
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def post(self, request, instructor_id):
+        instructor = get_object_or_404(Instructor, pk=instructor_id)
+        form = InstructorForm(request.POST, instance=instructor)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Zapisano zmiany")
+            return redirect("/instructors")
+        else:
+            messages.error(request, "Wprowadzono niepoprawne dane")
+            return redirect(f"/instructors/{instructor_id}/edit")
 
 
 @requires_permissions(permission_type=["E", "A"])

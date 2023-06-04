@@ -15,7 +15,7 @@ class NewStudentForm(forms.Form):
     email = forms.EmailField(max_length=50, label="Adres e-mail", required=False)
 
 
-class NewInstructorForm(forms.ModelForm):
+class InstructorForm(forms.ModelForm):
     class Meta:
         model = Instructor
         fields = [
