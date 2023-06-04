@@ -120,3 +120,18 @@ class VehicleForm(forms.ModelForm):
             "gearbox_type",
             "type",
         ]
+
+
+class CreateCategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = [
+            "symbol",
+            "description",
+            "required_practical_hours",
+            "price",
+            "is_discount",
+            "discount_price",
+            "is_available",
+            "photo",
+        ]

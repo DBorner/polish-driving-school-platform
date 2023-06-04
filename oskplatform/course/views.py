@@ -14,6 +14,7 @@ from course.forms import (
     NewTheoryForm,
     TheoryEditForm,
     VehicleForm,
+    CreateCategoryForm
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -783,7 +784,7 @@ class EditVehicleView(View):
         vehicle = get_object_or_404(Vehicle, pk=vehicle_id)
         context = {"vehicle": vehicle}
         return HttpResponse(self.template.render(context, request))
-    
+
     @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def post(self, request, vehicle_id):
         vehicle = get_object_or_404(Vehicle, pk=vehicle_id)
@@ -833,9 +834,30 @@ def change_vehicle_availability_view(request, vehicle_id):
 
 class CategoriesView(View):
     template = loader.get_template("categories.html")
-    
+
     @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def get(self, request):
         categories = Category.objects.all()
         context = {"categories": categories}
         return HttpResponse(self.template.render(context, request))
+
+
+class CreateCategoryView(View):
+    template = loader.get_template("category_create.html")
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def get(self, request):
+        return HttpResponse(self.template.render({}, request))
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def post(self, request):
+        form = CreateCategoryForm(request.POST, request.FILES)
+        if form.is_valid():
+            category = form.save(commit=False)
+            category.is_available = True
+            category.save()
+            messages.success(request, "Dodano kategorię")
+            return redirect("/categories")
+        else:
+            messages.error(request, "Wprowadzono niepoprawne dane")
+            return redirect("/category/create")
