@@ -963,3 +963,13 @@ def change_instructor_availability_view(request, instructor_id):
     instructor.save()
     messages.success(request, "Zmieniono dostępność instruktora")
     return redirect("/instructors")
+
+class QualificationsView(View):
+    template = loader.get_template("qualifications.html")
+    
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def get(self, request, instructor_id):
+        instructor = get_object_or_404(Instructor, pk=instructor_id)
+        qualifications = Qualification.objects.filter(instructor=instructor)
+        context = {"qualifications": qualifications, "instructor": instructor}
+        return HttpResponse(self.template.render(context, request))
