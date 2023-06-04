@@ -1,0 +1,42 @@
+{% extends 'base_course.html' %}
+
+{% block title %}Edycja kursanta {{student.full_name}}{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <div class="bg-white rounded shadow overflow-hidden">
+    <div class="pt-4 pb-5 px-6 border-bottom border-secondary-light">
+      <form action="" method="post">
+    {% csrf_token %}
+      <div class="mb-6">
+        <label class="form-label" for="">Nazwisko</label>
+        <input class="form-control" type="text" name="surname" placeholder="np. Kowalski" id="" value={{student.surname}}>
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Imię</label>
+        <input class="form-control" type="text" name="name" placeholder="np. Jan" id="" value={{student.name}}>
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Data urodzenia</label>
+        <input class="form-control" type="date" name="birth_date" placeholder="np. 07-05-2002" id="" value={{student.birth_date|date:"Y-m-d"}}>
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Numer telefonu</label>
+        <input class="form-control" type="number" name="phone_number" placeholder="np. 111 222 333" id="" value={{student.phone_number}}>
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Adres e-mail</label>
+        <input class="form-control" type="email" name="email" placeholder="np. jan.kowalski@email.com" id="" value={{student.email}}>
+      </div>
+      
+      <button class="btn btn-primary" type="submit">Zaaktualizuj dane</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
