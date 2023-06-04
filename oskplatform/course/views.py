@@ -19,6 +19,7 @@ from course.forms import (
     CreateQualificationForm,
     NewPasswordForm,
     InstructorForm,
+    EmployeeForm,
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -1163,6 +1164,7 @@ def delete_qualification_view(request, qualification_id):
     messages.success(request, "Usunięto kwalifikację")
     return redirect(f"/qualifications/{qualification.instructor.id}/")
 
+
 class EmployeesView(View):
     template = loader.get_template("employees.html")
 
@@ -1177,3 +1179,41 @@ class EmployeesView(View):
             employees = Employee.objects.all()
         context = {"employees": employees}
         return HttpResponse(self.template.render(context, request))
+
+
+class RegisterEmployeeView(View):
+    template = loader.get_template("register_employee.html")
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def get(self, request):
+        return HttpResponse(self.template.render({}, request))
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def post(self, request):
+        form = EmployeeForm(request.POST)
+        if form.is_valid():
+            employee = form.save()
+            next_user_id = CustomUser.objects.order_by("-pk")[0].pk + 1
+            username = f"{employee.surname.lower()[:3]}{employee.name.lower()[:3]}{next_user_id}"
+            password = generate_password()
+            if request.POST.get("permissions_type") == "A":
+                permissions_type = "A"
+            else:
+                permissions_type = "E"
+            user = CustomUser.objects.create_user(
+                username=username,
+                password=password,
+                permissions_type=permissions_type,
+                employee=employee,
+            )
+            user.save()
+            messages.success(
+                request,
+                f"""Dodano nowego pracownika - dane logowania:
+                         Login: {username}
+                         Hasło: {password}""",
+            )
+            return redirect("/employees/")
+        else:
+            messages.error(request, "Wprowadzono niepoprawne dane")
+            return redirect("/register_employee/")

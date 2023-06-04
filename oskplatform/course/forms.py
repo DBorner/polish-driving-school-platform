@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import get_user_model
-from users.models import Instructor, Student, Qualification
+from users.models import Instructor, Student, Qualification, Employee
 from course.models import Vehicle, Course, Category, TheoryCourse
 
 
@@ -25,6 +25,16 @@ class InstructorForm(forms.ModelForm):
             "date_of_employment",
             "phone_number",
             "instructor_id",
+        ]
+        
+class EmployeeForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = [
+            "surname",
+            "name",
+            "birth_date",
+            "date_of_employment",
         ]
 
 

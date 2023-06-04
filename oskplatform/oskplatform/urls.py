@@ -23,6 +23,7 @@ urlpatterns = [
     path('students/<int:student_id>/courses/', course_views.CoursesView.as_view()),
     path('register_student/', course_views.RegisterStudentView.as_view()),
     path('register_instructor/', course_views.RegisterInstructorView.as_view()),
+    path('register_employee/', course_views.RegisterEmployeeView.as_view()),
     path('upcoming_lessons/', course_views.UpcomingLessonsView.as_view()),
     path('profile_settings/', course_views.ProfileSettingsView.as_view()),
     path('courses/', course_views.CoursesView.as_view()),
