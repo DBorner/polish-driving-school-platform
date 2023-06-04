@@ -1035,6 +1035,77 @@ class EditInstructorView(View):
             return redirect(f"/instructors/{instructor_id}/edit")
 
 
+@requires_permissions(permission_type=["A"])
+def delete_instructor_view(request, instructor_id):
+    instructor = get_object_or_404(Instructor, pk=instructor_id)
+    if (
+        Course.objects.filter(instructor=instructor).exists()
+        or Qualification.objects.filter(instructor=instructor).exists()
+        or PracticalLesson.objects.filter(instructor=instructor).exists()
+        or TheoryCourse.objects.filter(instructor=instructor).exists()
+    ):
+        messages.error(
+            request,
+            "Nie można usunąć instruktora, który jest do czegoś przypisany",
+        )
+        return redirect("/instructors")
+    instructor.delete()
+    messages.success(request, "Usunięto instruktora")
+    return redirect("/instructors")
+
+
+@requires_permissions(permission_type=["A"])
+def delete_account_of_instructor_view(request, instructor_id):
+    instructor = get_object_or_404(Instructor, pk=instructor_id)
+    user = get_object_or_404(CustomUser, instructor=instructor)
+    user.delete()
+    messages.success(request, "Usunięto konto instruktora")
+    return redirect("/instructors")
+
+
+@requires_permissions(permission_type=["A"])
+def generate_new_password_for_instructor_view(request, instructor_id):
+    instructor = get_object_or_404(Instructor, pk=instructor_id)
+    user = get_object_or_404(CustomUser, instructor=instructor)
+    password = generate_password()
+    user.set_password(password)
+    user.save()
+    messages.success(
+        request,
+        f"""Zresetowano hasło instruktora {instructor.full_name}- dane logowania:
+                    Login: {user.username}
+                    Hasło: {password}""",
+    )
+    return redirect("/instructors")
+
+
+@requires_permissions(permission_type=["A"])
+def create_account_for_instructor_view(request, instructor_id):
+    instructor = get_object_or_404(Instructor, pk=instructor_id)
+    if CustomUser.objects.filter(instructor=instructor_id).exists():
+        messages.error(request, "Konto dla tego instruktora już istnieje")
+        return redirect("/instructors")
+    next_user_id = CustomUser.objects.order_by("-pk")[0].pk + 1
+    username = (
+        f"{instructor.surname.lower()[:3]}{instructor.name.lower()[:3]}{next_user_id}"
+    )
+    password = generate_password()
+    user = CustomUser.objects.create_user(
+        username=username,
+        password=password,
+        permissions_type="I",
+        instructor=instructor,
+    )
+    user.save()
+    messages.success(
+        request,
+        f"""Utworzono konto dla instruktora {instructor.full_name} - dane logowania:
+                    Login: {username}
+                    Hasło: {password}""",
+    )
+    return redirect("/instructors")
+
+
 @requires_permissions(permission_type=["E", "A"])
 def change_instructor_availability_view(request, instructor_id):
     instructor = get_object_or_404(Instructor, pk=instructor_id)
