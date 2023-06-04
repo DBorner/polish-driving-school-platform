@@ -1,0 +1,37 @@
+{% extends 'base_course.html' %}
+
+{% block title %}Edycja pracownika {{employee.full_name}}{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <div class="bg-white rounded shadow overflow-hidden">
+    <div class="pt-4 pb-5 px-6 border-bottom border-secondary-light">
+      <form action="#" method="post">
+    {% csrf_token %}
+      <div class="mb-6">
+        <label class="form-label" for="">Nazwisko</label>
+        <input class="form-control" type="text" name="surname" placeholder="np. Kowalski" value={{employee.surname}} id="">
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Imię</label>
+        <input class="form-control" type="text" name="name" placeholder="np. Jan" value={{employee.name}} id="">
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Data urodzenia</label>
+        <input class="form-control" type="date" name="birth_date" placeholder="np. 07-05-2002" value={{employee.birth_date|date:"Y-m-d"}} id="">
+      </div>
+
+      <div class="mb-6">
+        <label class="form-label" for="">Data zatrudnienia</label>
+        <input class="form-control" type="date" name="date_of_employment" placeholder="np. 07-05-2022" value={{employee.date_of_employment|date:"Y-m-d"}} id="">
+      </div>
+      
+      <button class="btn btn-primary" type="submit">Zatwierdź zmiany</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

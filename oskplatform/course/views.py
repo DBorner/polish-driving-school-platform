@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required
-from users.models import CustomUser, Student, Instructor, Qualification
+from users.models import CustomUser, Student, Instructor, Qualification, Employee
 from course.models import PracticalLesson, Course, Category, Vehicle, TheoryCourse
 from django.utils import timezone
 from course.forms import (
@@ -17,6 +17,9 @@ from course.forms import (
     CreateCategoryForm,
     EditCategoryForm,
     CreateQualificationForm,
+    NewPasswordForm,
+    InstructorForm,
+    EmployeeForm,
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -61,6 +64,24 @@ class ProfileSettingsView(View):
             user_info = user.employee
         context = {"user_info": user_info}
         return HttpResponse(self.template.render(context, request))
+
+    @method_decorator(
+        requires_permissions(
+            permission_type=["S", "I", "E", "A"],
+            redirect_url="/login",
+            redirect_message="Musisz być zalogowanym",
+        )
+    )
+    def post(self, request):
+        user = request.user
+        form = NewPasswordForm(user, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Hasło zostało zmienione")
+            return redirect("/profile_settings")
+        else:
+            messages.error(request, "Podano nieprawidłowe hasło")
+            return redirect("/profile_settings")
 
 
 class UpcomingLessonsView(View):
@@ -957,6 +978,135 @@ class InstructorsView(View):
         return instructors
 
 
+class RegisterInstructorView(View):
+    template = loader.get_template("register_instructor.html")
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def get(self, request):
+        return HttpResponse(self.template.render({}, request))
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def post(self, request):
+        form = InstructorForm(request.POST)
+        if form.is_valid():
+            instructor = form.save(commit=False)
+            instructor.is_active = True
+            instructor.save()
+            next_user_id = CustomUser.objects.order_by("-pk")[0].pk + 1
+            username = f"{instructor.surname.lower()[:3]}{instructor.name.lower()[:3]}{next_user_id}"
+            password = generate_password()
+            user = CustomUser.objects.create_user(
+                username=username,
+                password=password,
+                permissions_type="S",
+                instructor=instructor,
+            )
+            user.save()
+            messages.success(
+                request,
+                f"""Dodano nowego instruktora - dane logowania:
+                         Login: {username}
+                         Hasło: {password}""",
+            )
+            return redirect("/instructors")
+        else:
+            messages.error(request, "Wprowadzono niepoprawne dane")
+            return redirect("/register_instructor/")
+
+
+class EditInstructorView(View):
+    template = loader.get_template("instructor_edit.html")
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def get(self, request, instructor_id):
+        instructor = get_object_or_404(Instructor, pk=instructor_id)
+        context = {"instructor": instructor}
+        return HttpResponse(self.template.render(context, request))
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def post(self, request, instructor_id):
+        instructor = get_object_or_404(Instructor, pk=instructor_id)
+        form = InstructorForm(request.POST, instance=instructor)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Zapisano zmiany")
+            return redirect("/instructors")
+        else:
+            messages.error(request, "Wprowadzono niepoprawne dane")
+            return redirect(f"/instructors/{instructor_id}/edit")
+
+
+@requires_permissions(permission_type=["A"])
+def delete_instructor_view(request, instructor_id):
+    instructor = get_object_or_404(Instructor, pk=instructor_id)
+    if (
+        Course.objects.filter(instructor=instructor).exists()
+        or Qualification.objects.filter(instructor=instructor).exists()
+        or PracticalLesson.objects.filter(instructor=instructor).exists()
+        or TheoryCourse.objects.filter(instructor=instructor).exists()
+    ):
+        messages.error(
+            request,
+            "Nie można usunąć instruktora, który jest do czegoś przypisany",
+        )
+        return redirect("/instructors")
+    instructor.delete()
+    messages.success(request, "Usunięto instruktora")
+    return redirect("/instructors")
+
+
+@requires_permissions(permission_type=["A"])
+def delete_account_of_instructor_view(request, instructor_id):
+    instructor = get_object_or_404(Instructor, pk=instructor_id)
+    user = get_object_or_404(CustomUser, instructor=instructor)
+    user.delete()
+    messages.success(request, "Usunięto konto instruktora")
+    return redirect("/instructors")
+
+
+@requires_permissions(permission_type=["A"])
+def generate_new_password_for_instructor_view(request, instructor_id):
+    instructor = get_object_or_404(Instructor, pk=instructor_id)
+    user = get_object_or_404(CustomUser, instructor=instructor)
+    password = generate_password()
+    user.set_password(password)
+    user.save()
+    messages.success(
+        request,
+        f"""Zresetowano hasło instruktora {instructor.full_name}- dane logowania:
+                    Login: {user.username}
+                    Hasło: {password}""",
+    )
+    return redirect("/instructors")
+
+
+@requires_permissions(permission_type=["A"])
+def create_account_for_instructor_view(request, instructor_id):
+    instructor = get_object_or_404(Instructor, pk=instructor_id)
+    if CustomUser.objects.filter(instructor=instructor_id).exists():
+        messages.error(request, "Konto dla tego instruktora już istnieje")
+        return redirect("/instructors")
+    next_user_id = CustomUser.objects.order_by("-pk")[0].pk + 1
+    username = (
+        f"{instructor.surname.lower()[:3]}{instructor.name.lower()[:3]}{next_user_id}"
+    )
+    password = generate_password()
+    user = CustomUser.objects.create_user(
+        username=username,
+        password=password,
+        permissions_type="I",
+        instructor=instructor,
+    )
+    user.save()
+    messages.success(
+        request,
+        f"""Utworzono konto dla instruktora {instructor.full_name} - dane logowania:
+                    Login: {username}
+                    Hasło: {password}""",
+    )
+    return redirect("/instructors")
+
+
 @requires_permissions(permission_type=["E", "A"])
 def change_instructor_availability_view(request, instructor_id):
     instructor = get_object_or_404(Instructor, pk=instructor_id)
@@ -1013,3 +1163,167 @@ def delete_qualification_view(request, qualification_id):
     qualification.delete()
     messages.success(request, "Usunięto kwalifikację")
     return redirect(f"/qualifications/{qualification.instructor.id}/")
+
+
+class EmployeesView(View):
+    template = loader.get_template("employees.html")
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def get(self, request):
+        if request.GET.get("q"):
+            employees = Employee.objects.filter(
+                Q(name__icontains=request.GET.get("q"))
+                | Q(surname__icontains=request.GET.get("q"))
+            )
+        else:
+            employees = Employee.objects.all()
+        context = {"employees": employees}
+        return HttpResponse(self.template.render(context, request))
+
+
+class RegisterEmployeeView(View):
+    template = loader.get_template("register_employee.html")
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def get(self, request):
+        return HttpResponse(self.template.render({}, request))
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def post(self, request):
+        form = EmployeeForm(request.POST)
+        if form.is_valid():
+            employee = form.save()
+            next_user_id = CustomUser.objects.order_by("-pk")[0].pk + 1
+            username = f"{employee.surname.lower()[:3]}{employee.name.lower()[:3]}{next_user_id}"
+            password = generate_password()
+            print(request.POST.get("is_admin"))
+            if request.POST.get("is_admin") == 'on':
+                permissions_type = "A"
+            else:
+                permissions_type = "E"
+            user = CustomUser.objects.create_user(
+                username=username,
+                password=password,
+                permissions_type=permissions_type,
+                employee=employee,
+            )
+            user.save()
+            messages.success(
+                request,
+                f"""Dodano nowego pracownika - dane logowania:
+                         Login: {username}
+                         Hasło: {password}""",
+            )
+            return redirect("/employees/")
+        else:
+            messages.error(request, "Wprowadzono niepoprawne dane")
+            return redirect("/register_employee/")
+
+
+class EditEmployeeView(View):
+    template = loader.get_template("employee_edit.html")
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def get(self, request, employee_id):
+        employee = get_object_or_404(Employee, pk=employee_id)
+        context = {"employee": employee}
+        return HttpResponse(self.template.render(context, request))
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def post(self, request, employee_id):
+        employee = get_object_or_404(Employee, pk=employee_id)
+        form = EmployeeForm(request.POST, instance=employee)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Zaktualizowano dane pracownika")
+            return redirect("/employees/")
+        else:
+            messages.error(request, "Wprowadzono niepoprawne dane")
+            return redirect(f"/employee/{employee_id}/edit/")
+
+
+@requires_permissions(permission_type=["A"])
+def delete_employee_view(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    if request.user.employee == employee:
+        messages.error(request, "Nie możesz usunąć samego siebie")
+        return redirect("/employees/")
+    employee.delete()
+    messages.success(request, "Usunięto pracownika")
+    return redirect("/employees/")
+
+
+@requires_permissions(permission_type=["A"])
+def change_employee_permissions_type_view(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    if request.user.employee == employee:
+        messages.error(request, "Nie możesz zmienić uprawnień samemu sobie")
+        return redirect("/employees/")
+    user = get_object_or_404(CustomUser, employee=employee)
+    if user.permissions_type == "A":
+        user.permissions_type = "E"
+    else:
+        user.permissions_type = "A"
+    user.save()
+    messages.success(request, "Zmieniono uprawnienia pracownika")
+    return redirect("/employees/")
+
+
+@requires_permissions(permission_type=["A"])
+def generate_new_password_for_employee_view(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    if request.user.employee == employee:
+        messages.error(request, "Nie możesz zmienić hasła samemu sobie")
+        return redirect("/employees/")
+    user = get_object_or_404(CustomUser, employee=employee)
+    password = generate_password()
+    user.set_password(password)
+    user.save()
+    messages.success(
+        request,
+        f"""Zmieniono hasło pracownika {employee.full_name} - dane logowania:
+                 Login: {user.username}
+                 Hasło: {password}""",
+    )
+    return redirect("/employees/")
+
+
+@requires_permissions(permission_type=["A"])
+def delete_account_of_employee_view(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    if request.user.employee == employee:
+        messages.error(request, "Nie możesz usunąć swojego konta")
+        return redirect("/employees/")
+    user = get_object_or_404(CustomUser, employee=employee)
+    user.delete()
+    messages.success(request, "Usunięto konto pracownika")
+    return redirect("/employees/")
+
+
+@requires_permissions(permission_type=["A"])
+def create_account_for_employee_view(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    if request.user.employee == employee:
+        messages.error(request, "Nie możesz utworzyć konta samemu sobie")
+        return redirect("/employees/")
+    if CustomUser.objects.filter(employee=employee).exists():
+        messages.error(request, "Konto dla tego pracownika już istnieje")
+        return redirect("/employees/")
+    next_user_id = CustomUser.objects.order_by("-pk")[0].pk + 1
+    username = (
+        f"{employee.surname.lower()[:3]}{employee.name.lower()[:3]}{next_user_id}"
+    )
+    password = generate_password()
+    CustomUser.objects.create_user(
+        username=username,
+        password=password,
+        permissions_type="E",
+        employee=employee,
+    )
+    messages.success(
+        request,
+        f"""Utworzono konto dla pracownika {employee.full_name} - dane logowania:
+                    Login: {username}
+                    Hasło: {password}""",
+    )
+    return redirect("/employees/")

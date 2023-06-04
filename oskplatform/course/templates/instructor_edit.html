@@ -1,0 +1,47 @@
+{% extends 'base_course.html' %}
+
+{% block title %}Edycja instruktora{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <div class="bg-white rounded shadow overflow-hidden">
+    <div class="pt-4 pb-5 px-6 border-bottom border-secondary-light">
+      <form action="#" method="post">
+    {% csrf_token %}
+      <div class="mb-6">
+        <label class="form-label" for="">Nazwisko</label>
+        <input class="form-control" type="text" name="surname" placeholder="np. Kowalski" value={{instructor.surname}} id="">
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Imię</label>
+        <input class="form-control" type="text" name="name" placeholder="np. Jan" value={{instructor.name}} id="">
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Data urodzenia</label>
+        <input class="form-control" type="date" name="birth_date" value={{instructor.birth_date|date:"Y-m-d"}} id="">
+      </div>
+
+      <div class="mb-6">
+        <label class="form-label" for="">Data zatrudnienia</label>
+        <input class="form-control" type="date" name="date_of_employment" value={{instructor.date_of_employment|date:"Y-m-d"}} id="">
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Numer telefonu</label>
+        <input class="form-control" type="number" name="phone_number" placeholder="np. 111 222 333" value={{instructor.phone_number}} id="">
+      </div>
+      
+      <div class="mb-6">
+        <label class="form-label" for="">Numer legitymacji</label>
+        <input class="form-control" type="text" name="instructor_id" placeholder="np. DW/01" value={{instructor.instructor_id}} id="">
+      </div>
+      
+      <button class="btn btn-primary" type="submit">Zapisz zmiany</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}

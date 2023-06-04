@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import get_user_model
-from users.models import Instructor, Student, Qualification
+from users.models import Instructor, Student, Qualification, Employee
 from course.models import Vehicle, Course, Category, TheoryCourse
 
 
@@ -15,6 +15,29 @@ class NewStudentForm(forms.Form):
     email = forms.EmailField(max_length=50, label="Adres e-mail", required=False)
 
 
+class InstructorForm(forms.ModelForm):
+    class Meta:
+        model = Instructor
+        fields = [
+            "surname",
+            "name",
+            "birth_date",
+            "date_of_employment",
+            "phone_number",
+            "instructor_id",
+        ]
+        
+class EmployeeForm(forms.ModelForm):
+    class Meta:
+        model = Employee
+        fields = [
+            "surname",
+            "name",
+            "birth_date",
+            "date_of_employment",
+        ]
+
+
 class EditStudentForm(forms.Form):
     surname = forms.CharField(max_length=50, min_length=3, label="Nazwisko")
     name = forms.CharField(max_length=50, min_length=3, label="Imię")
@@ -25,7 +48,7 @@ class EditStudentForm(forms.Form):
     email = forms.EmailField(max_length=50, label="Adres e-mail", required=False)
 
 
-class SetPasswordForm(SetPasswordForm):
+class NewPasswordForm(SetPasswordForm):
     class Meta:
         model = get_user_model()
         fields = ["new_password1", "new_password2"]
