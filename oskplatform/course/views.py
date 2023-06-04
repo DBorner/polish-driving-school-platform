@@ -885,9 +885,37 @@ class EditCategoryView(View):
             ]
             category.is_discount = form.cleaned_data["is_discount"]
             category.discount_price = form.cleaned_data["discount_price"]
+            if form.cleaned_data["photo"] != "default_category.jpg":
+                category.photo = form.cleaned_data["photo"]
             category.save()
             messages.success(request, "Zapisano zmiany")
             return redirect("/categories")
         else:
             messages.error(request, f"Wprowadzono niepoprawne dane: {form.errors}")
             return redirect(f"/category/{category_symbol}/edit")
+
+
+@requires_permissions(permission_type=["E", "A"])
+def delete_category_view(request, category_symbol):
+    category = get_object_or_404(Category, pk=category_symbol)
+    if (
+        Course.objects.filter(category=category).exists()
+        or Qualification.objects.filter(category=category).exists()
+    ):
+        messages.error(
+            request,
+            "Nie można usunąć kategorii, która jest do czegoś przypisana",
+        )
+        return redirect("/categories")
+    category.delete()
+    messages.success(request, "Usunięto kategorię")
+    return redirect("/categories")
+
+
+@requires_permissions(permission_type=["E", "A"])
+def change_category_availability_view(request, category_symbol):
+    category = get_object_or_404(Category, pk=category_symbol)
+    category.is_available = not category.is_available
+    category.save()
+    messages.success(request, "Zmieniono dostępność kategorii")
+    return redirect("/categories")
