@@ -1,0 +1,79 @@
+{% extends 'base_course.html' %}
+
+{% block title %}Zajęcia teoretyczne{% endblock %}
+
+{% block content %}
+
+{% load course_tags %}
+
+<section class="py-8">
+    <div class="container">
+      <div class="px-4 pb-4 mb-6 bg-white rounded shadow">
+        <form action={% url 'theories' %} method='get'>
+            <span class="small">
+                <label for="instructor" class="small">Instruktor</label>
+                <select id='instructor' name="instructor">
+                <option value=""></option>
+                {% for instructor in instructors %}
+                <option value={{instructor.id}}>{{instructor}}</option>
+                {% endfor %}
+              </select>
+            </span>
+          <span class="small">
+            <label for="status" class="small">Status kursu</label>
+            <select name="status" id="status">
+            <option value="all">Wszystkie</option>
+            <option value="coming">Zaplanowane</option>
+            <option value="done">Odbyte</option>
+          </select></span>
+          <span class="small">
+            <label for="type" class="small">Typ kursu</label>
+            <select name="type" id='type'>
+            <option value="all">Wszystkie</option>
+            <option value="T">Tygodniowe</option>
+            <option value="W">Weekendowe</option>
+          </select></span>
+          <button class="btn btn-primary" type="submit">Wyszukaj</button>
+        </form>
+        <div class="table-responsive">
+          <table class="table mb-0 table-borderless table-striped small">
+            <thead>
+              <tr class="text-secondary"><th class="pt-4 pb-3 px-6">Data startu kursu</th><th class="pt-4 pb-3 px-6">Typ kursu</th><th class="pt-4 pb-3 px-6">Instruktor</th><th class="pt-4 pb-3 px-6">Akcje</th></tr>
+            </thead>
+            <tbody>
+            {% for theory in theories %}
+              <tr>
+                <td class="py-5 px-6">
+                <div class="d-flex align-items-center">
+                  <div>
+                    <p class="mb-0">#{{theory.id}} - {{theory.start_date|date:"d.m.Y"}}r.</p>
+                  </div>
+                </td>
+                <td class="py-5 px-6">{% if theory.type == "T" %}Tygodniowy{% else %}Weekendowy{% endif %}</td>
+                <td class="py-5 px-6">
+                  {{theory.instructor}}
+                </td>
+                <td class="py-5 px-6">
+                  <a class="btn p-0 me-2" href="{{theories.id}}/edit">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
+                      <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001zm-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708l-1.585-1.585z"/>
+                    </svg>
+                  </a>
+                  <a class="btn p-0 me-2" href="{{theory.id}}/delete">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                      </svg>
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+  </section>
+  </div>
+  </section>
+  {% endblock %}

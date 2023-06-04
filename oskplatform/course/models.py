@@ -86,6 +86,10 @@ class TheoryCourse(models.Model):
     def __str__(self):
         return f'{self.id} - {self.start_date} ({self.type})'
     
+    @property
+    def is_already_happened(self):
+        return self.start_date < date.today()
+    
 class PracticalLesson(models.Model):
     id = models.AutoField(primary_key=True)
     date = models.DateField(null=False)

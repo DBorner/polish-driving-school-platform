@@ -614,7 +614,7 @@ class CreateTheoryView(View):
             )
             theory.save()
             messages.success(request, "Dodano nowy wykład")
-            return redirect("/theorie")
+            return redirect("/theories")
         messages.error(request, "Wprowadzono niepoprawne dane")
         return redirect("/theory/create")
 
@@ -624,3 +624,45 @@ class CreateTheoryView(View):
         elif date.strftime(start_date, "%A") == "Saturday" and type == "W":
             return True
         return False
+
+
+class TheoriesView(View):
+    template = loader.get_template("theories.html")
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def get(self, request):
+        if request.GET.get("instructor") != None:
+            theories = self._search_results(request)
+        else:
+            theories = TheoryCourse.objects.all()
+        instructors = Instructor.objects.filter(is_active=True)
+        context = {"theories": theories,
+                   "instructors": instructors}
+        return HttpResponse(self.template.render(context, request))
+
+    def _search_results(self, request):
+        query = request.GET.get("q")
+        theories = TheoryCourse.objects.all()
+        if request.GET.get("instructor") != "":
+            try:
+                theories = theories.filter(
+                    instructor__pk=request.GET.get("instructor"))
+            except ValueError:
+                pass
+        if request.GET.get("status") == "done":
+            temp_theories = []
+            for theory in theories:
+                if theory.is_already_happened:
+                    temp_theories.append(theory)
+            theories = temp_theories
+        elif request.GET.get("status") == "coming":
+            temp_theories = []
+            for theory in theories:
+                if not theory.is_already_happened:
+                    temp_theories.append(theory)
+            theories = temp_theories
+        if request.GET.get("type") == "T":
+            theories = theories.filter(type="T")
+        elif request.GET.get("type") == "W":
+            theories = theories.filter(type="W")
+        return theories
