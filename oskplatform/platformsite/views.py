@@ -23,7 +23,7 @@ class CategoryView(View):
         category = get_object_or_404(Category, pk=category_id)
         if category.is_available == False:
             return render(request, "404.html")
-        template = loader.get_template("category.html")
+        template = loader.get_template("category_home.html")
         context = {
             "category": category,
         }
@@ -32,7 +32,7 @@ class CategoryView(View):
 
 class VehiclesView(View):
     def get(self, request):
-        template = loader.get_template("vehicles.html")
+        template = loader.get_template("vehicles_home.html")
         vehicles = Vehicle.objects.all().values()
         vehicles = vehicles.filter(is_available=True).exclude(type__startswith="P")
         context = {"vehicles": vehicles}
@@ -41,7 +41,7 @@ class VehiclesView(View):
 
 class InstructorsView(View):
     def get(self, request):
-        template = loader.get_template("instructors.html")
+        template = loader.get_template("instructors_home.html")
         instructors = Instructor.objects.all().values()
         instructors = instructors.filter(is_active=True)
         instructors_qualifications = []
@@ -55,7 +55,7 @@ class InstructorsView(View):
 
 class TheorysView(View):
     def get(self, request):
-        template = loader.get_template("theories.html")
+        template = loader.get_template("theories_home.html")
         theories = (
             TheoryCourse.objects.all()
             .values()

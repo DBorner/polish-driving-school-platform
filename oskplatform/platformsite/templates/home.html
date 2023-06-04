@@ -23,7 +23,7 @@
                     <!-- Post preview-->
                     {% for x in categories %}
                     <div class="post-preview">
-                        <a href="/category/{{ x.symbol }}">
+                        <a href="/home/category/{{ x.symbol }}">
                             {% if x.is_discount == True %}
                             <h2 class="post-title">Kategoria {{ x.symbol }} - <s><span style="color: red">{{ x.price }} zł</span></s> {{ x.discount_price }} zł</h2>
                             {% else %}
