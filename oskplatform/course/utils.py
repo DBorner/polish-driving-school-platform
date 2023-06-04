@@ -86,3 +86,11 @@ def generate_password():
     pwo.minlen = 6
     pwo.maxlen = 6
     return pwo.generate()
+
+
+def check_start_date_for_theory_course(start_date, type):
+        if datetime.date.strftime(start_date, "%A") == "Monday" and type == "T":
+            return True
+        elif datetime.date.strftime(start_date, "%A") == "Saturday" and type == "W":
+            return True
+        return False

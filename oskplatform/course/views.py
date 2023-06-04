@@ -12,6 +12,7 @@ from course.forms import (
     EditCourseForm,
     EditStudentForm,
     NewTheoryForm,
+    TheoryEditForm,
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -20,6 +21,7 @@ from course.utils import (
     is_student_active,
     requires_permissions,
     generate_password,
+    check_start_date_for_theory_course,
 )
 from django.db.models import Q
 from django.views import View
@@ -604,7 +606,7 @@ class CreateTheoryView(View):
     @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def post(self, request):
         form = NewTheoryForm(request.POST)
-        if form.is_valid() and self._check_start_date(
+        if form.is_valid() and check_start_date_for_theory_course(
             form.cleaned_data["start_date"], form.cleaned_data["type"]
         ):
             theory = TheoryCourse.objects.create(
@@ -618,13 +620,6 @@ class CreateTheoryView(View):
         messages.error(request, "Wprowadzono niepoprawne dane")
         return redirect("/theory/create")
 
-    def _check_start_date(self, start_date, type):
-        if date.strftime(start_date, "%A") == "Monday" and type == "T":
-            return True
-        elif date.strftime(start_date, "%A") == "Saturday" and type == "W":
-            return True
-        return False
-
 
 class TheoriesView(View):
     template = loader.get_template("theories.html")
@@ -636,17 +631,14 @@ class TheoriesView(View):
         else:
             theories = TheoryCourse.objects.all()
         instructors = Instructor.objects.filter(is_active=True)
-        context = {"theories": theories,
-                   "instructors": instructors}
+        context = {"theories": theories, "instructors": instructors}
         return HttpResponse(self.template.render(context, request))
 
     def _search_results(self, request):
-        query = request.GET.get("q")
         theories = TheoryCourse.objects.all()
         if request.GET.get("instructor") != "":
             try:
-                theories = theories.filter(
-                    instructor__pk=request.GET.get("instructor"))
+                theories = theories.filter(instructor__pk=request.GET.get("instructor"))
             except ValueError:
                 pass
         if request.GET.get("status") == "done":
@@ -666,3 +658,31 @@ class TheoriesView(View):
         elif request.GET.get("type") == "W":
             theories = theories.filter(type="W")
         return theories
+
+
+class EditTheoryView(View):
+    template = loader.get_template("theory_edit.html")
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def get(self, request, theory_id):
+        theory = get_object_or_404(TheoryCourse, pk=theory_id)
+        instructors = Instructor.objects.filter(is_active=True)
+        context = {"theory": theory, "instructors": instructors}
+        return HttpResponse(self.template.render(context, request))
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def post(self, request, theory_id):
+        theory = get_object_or_404(TheoryCourse, pk=theory_id)
+        form = TheoryEditForm(request.POST)
+        if form.is_valid() and check_start_date_for_theory_course(
+            form.cleaned_data["start_date"], form.cleaned_data["type"]
+        ):
+            theory.type = form.cleaned_data["type"]
+            theory.start_date = form.cleaned_data["start_date"]
+            theory.instructor = form.cleaned_data["instructor"]
+            theory.save()
+            messages.success(request, "Zapisano zmiany")
+            return redirect("/theories")
+        else:
+            messages.error(request, "Wprowadzono niepoprawne dane")
+            return redirect(f"/theory/{theory_id}/edit")

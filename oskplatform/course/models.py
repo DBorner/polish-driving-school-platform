@@ -51,6 +51,12 @@ course_status_choices = [
     ('A', 'Anulowany'),
 ]
 
+course_status_dict = {
+    'R': 'Rozpoczęty',
+    'Z': 'Zakończony',
+    'A': 'Anulowany',
+}
+
 class Course(models.Model):
     id = models.AutoField(primary_key=True)
     pkk_number = models.CharField(max_length=20, null=False)
@@ -68,14 +74,22 @@ class Course(models.Model):
     def is_instructor_assigned(self):
         return self.instructor is not None
     
+    @property
+    def get_status(self):
+        return course_status_dict[self.course_status]
+    
 theory_type_choices = [
     ('T', 'Tygodniowy'),
     ('W', 'Weekendowy'),
 ]
+
+theory_type_dict = {
+    'T': 'Tygodniowy',
+    'W': 'Weekendowy',
+}
     
 class TheoryCourse(models.Model):
     class Meta:
-        unique_together = (('type', 'start_date'))
         constraints = [CheckConstraint(check=Q(start_date__gte=date.today()), name='start_date_gte_today')]
     
     id = models.AutoField(primary_key=True)
@@ -89,6 +103,10 @@ class TheoryCourse(models.Model):
     @property
     def is_already_happened(self):
         return self.start_date < date.today()
+    
+    @property
+    def get_type(self):
+        return theory_type_dict[self.type]
     
 class PracticalLesson(models.Model):
     id = models.AutoField(primary_key=True)

@@ -102,3 +102,10 @@ class NewTheoryForm(forms.ModelForm):
     class Meta:
         model = TheoryCourse
         fields = ["type", "start_date", "instructor"]
+
+
+class TheoryEditForm(forms.ModelForm):
+    
+    class Meta:
+        model = TheoryCourse
+        fields = ["type", "start_date", "instructor"]
