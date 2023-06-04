@@ -926,6 +926,31 @@ class InstructorsView(View):
 
     @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def get(self, request):
-        instructors = Instructor.objects.all()
+        if request.GET.get("q") != None:
+            instructors = self._search_results(request)
+        else:
+            instructors = Instructor.objects.all()
         context = {"instructors": instructors}
         return HttpResponse(self.template.render(context, request))
+
+    def _search_results(self, request):
+        query = request.GET.get("q")
+        instructors = Instructor.objects.filter(
+            Q(name__icontains=query)
+            | Q(surname__icontains=query)
+            | Q(instructor_id__icontains=query)
+            | Q(phone_number__icontains=query)
+        )
+        if request.GET.get("status") == "active":
+            temp_instructors = []
+            for instructor in instructors:
+                if instructor.is_active:
+                    temp_instructors.append(instructor)
+            return temp_instructors
+        elif request.GET.get("status") == "inactive":
+            temp_instructors = []
+            for instructor in instructors:
+                if not instructor.is_active:
+                    temp_instructors.append(instructor)
+            return temp_instructors
+        return instructors
