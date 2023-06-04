@@ -1217,3 +1217,25 @@ class RegisterEmployeeView(View):
         else:
             messages.error(request, "Wprowadzono niepoprawne dane")
             return redirect("/register_employee/")
+
+
+class EditEmployeeView(View):
+    template = loader.get_template("employee_edit.html")
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def get(self, request, employee_id):
+        employee = get_object_or_404(Employee, pk=employee_id)
+        context = {"employee": employee}
+        return HttpResponse(self.template.render(context, request))
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def post(self, request, employee_id):
+        employee = get_object_or_404(Employee, pk=employee_id)
+        form = EmployeeForm(request.POST, instance=employee)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Zaktualizowano dane pracownika")
+            return redirect("/employees/")
+        else:
+            messages.error(request, "Wprowadzono niepoprawne dane")
+            return redirect(f"/employee/{employee_id}/edit/")

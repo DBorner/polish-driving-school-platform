@@ -36,6 +36,15 @@ def get_employer_account_username(value):
             return CustomUser.objects.get(employee=employee).username
     return None
 
+@register.filter(name='is_employee_admin')
+def is_employee_admin(value):
+    if Employee.objects.filter(id=value).exists():
+        employee = Employee.objects.get(id=value)
+        if CustomUser.objects.filter(employee=employee).exists():
+            if CustomUser.objects.get(employee=employee).permissions_type == 'A':
+                return True
+    return False
+
 @register.filter(name='instructor_qualifications')
 def get_instructor_qualifications(value):
     if Instructor.objects.filter(id=value).exists():
