@@ -15,6 +15,19 @@ class NewStudentForm(forms.Form):
     email = forms.EmailField(max_length=50, label="Adres e-mail", required=False)
 
 
+class NewInstructorForm(forms.ModelForm):
+    class Meta:
+        model = Instructor
+        fields = [
+            "surname",
+            "name",
+            "birth_date",
+            "date_of_employment",
+            "phone_number",
+            "instructor_id",
+        ]
+
+
 class EditStudentForm(forms.Form):
     surname = forms.CharField(max_length=50, min_length=3, label="Nazwisko")
     name = forms.CharField(max_length=50, min_length=3, label="Imię")

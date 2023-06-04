@@ -18,6 +18,7 @@ from course.forms import (
     EditCategoryForm,
     CreateQualificationForm,
     NewPasswordForm,
+    NewInstructorForm,
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -974,6 +975,42 @@ class InstructorsView(View):
                     temp_instructors.append(instructor)
             return temp_instructors
         return instructors
+
+
+class RegisterInstructorView(View):
+    template = loader.get_template("register_instructor.html")
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def get(self, request):
+        return HttpResponse(self.template.render({}, request))
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def post(self, request):
+        form = NewInstructorForm(request.POST)
+        if form.is_valid():
+            instructor = form.save(commit=False)
+            instructor.is_active = True
+            instructor.save()
+            next_user_id = CustomUser.objects.order_by("-pk")[0].pk + 1
+            username = f"{instructor.surname.lower()[:3]}{instructor.name.lower()[:3]}{next_user_id}"
+            password = generate_password()
+            user = CustomUser.objects.create_user(
+                username=username,
+                password=password,
+                permissions_type="S",
+                instructor=instructor,
+            )
+            user.save()
+            messages.success(
+                request,
+                f"""Dodano nowego instruktora - dane logowania:
+                         Login: {username}
+                         Hasło: {password}""",
+            )
+            return redirect("/instructors")
+        else:
+            messages.error(request, "Wprowadzono niepoprawne dane")
+            return redirect("/register_instructor/")
 
 
 @requires_permissions(permission_type=["E", "A"])
