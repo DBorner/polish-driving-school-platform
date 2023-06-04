@@ -817,6 +817,20 @@ def delete_vehicle_view(request, vehicle_id):
     return redirect("/vehicles")
 
 
+def change_vehicle_availability_view(request, vehicle_id):
+    vehicle = get_object_or_404(Vehicle, pk=vehicle_id)
+    if PracticalLesson.objects.filter(vehicle=vehicle, date__gte=date.today()).exists():
+        messages.error(
+            request,
+            "Nie można zmienić dostępności pojazdu, który jest przypisany do jazd praktycznych",
+        )
+        return redirect("/vehicles")
+    vehicle.is_available = not vehicle.is_available
+    vehicle.save()
+    messages.success(request, "Zmieniono dostępność pojazdu")
+    return redirect("/vehicles")
+
+
 class CategoriesView(View):
     template = loader.get_template("categories.html")
     

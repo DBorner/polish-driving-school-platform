@@ -43,6 +43,7 @@ urlpatterns = [
     path('vehicle/create/', course_views.CreateVehicleView.as_view()),
     path('vehicle/<int:vehicle_id>/delete/', course_views.delete_vehicle_view),
     path('vehicle/<int:vehicle_id>/edit/', course_views.EditVehicleView.as_view()),
+    path('vehicle/<int:vehicle_id>/change_status', course_views.change_vehicle_availability_view),
     path('categories/', course_views.CategoriesView.as_view()),
     path('', platform_views.HomeView.as_view(), name='home'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
