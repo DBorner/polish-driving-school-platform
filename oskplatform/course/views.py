@@ -686,3 +686,14 @@ class EditTheoryView(View):
         else:
             messages.error(request, "Wprowadzono niepoprawne dane")
             return redirect(f"/theory/{theory_id}/edit")
+
+
+@requires_permissions(permission_type=["E", "A"])
+def delete_theory_view(request, theory_id):
+    theory = get_object_or_404(TheoryCourse, pk=theory_id)
+    if theory.is_already_happened:
+        messages.error(request, "Nie można usunąć wykładu, który już się odbył")
+        return redirect("/theories")
+    theory.delete()
+    messages.success(request, "Usunięto wykład")
+    return redirect("/theories")
