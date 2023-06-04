@@ -49,5 +49,6 @@ urlpatterns = [
     path('category/<str:category_symbol>/edit/', course_views.EditCategoryView.as_view()),
     path('category/<str:category_symbol>/delete/', course_views.delete_category_view),
     path('category/<str:category_symbol>/change_status', course_views.change_category_availability_view),
+    path('instructors/', course_views.InstructorsView.as_view(), name='instructors'),
     path('', platform_views.HomeView.as_view(), name='home'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

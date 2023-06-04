@@ -919,3 +919,13 @@ def change_category_availability_view(request, category_symbol):
     category.save()
     messages.success(request, "Zmieniono dostępność kategorii")
     return redirect("/categories")
+
+
+class InstructorsView(View):
+    template = loader.get_template("instructors.html")
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def get(self, request):
+        instructors = Instructor.objects.all()
+        context = {"instructors": instructors}
+        return HttpResponse(self.template.render(context, request))
