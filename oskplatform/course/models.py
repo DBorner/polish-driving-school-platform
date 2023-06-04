@@ -43,7 +43,7 @@ class Category(models.Model):
     class Meta:
         constraints = [
             CheckConstraint(
-                check=Q(required_practical_hours__gte=0),
+                check=Q(required_practical_hours__gt=0),
                 name="required_practical_hours_gte_0",
             ),
             CheckConstraint(check=Q(price__gte=0), name="price_gte_0"),

@@ -891,7 +891,7 @@ class EditCategoryView(View):
             messages.success(request, "Zapisano zmiany")
             return redirect("/categories")
         else:
-            messages.error(request, f"Wprowadzono niepoprawne dane: {form.errors}")
+            messages.error(request, "Wprowadzono niepoprawne dane")
             return redirect(f"/category/{category_symbol}/edit")
 
 
