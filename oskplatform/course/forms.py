@@ -132,6 +132,17 @@ class CreateCategoryForm(forms.ModelForm):
             "price",
             "is_discount",
             "discount_price",
-            "is_available",
+            "photo",
+        ]
+
+class EditCategoryForm(forms.ModelForm):
+    class Meta:
+        model = Category
+        fields = [
+            "description",
+            "required_practical_hours",
+            "price",
+            "is_discount",
+            "discount_price",
             "photo",
         ]

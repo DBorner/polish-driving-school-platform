@@ -15,6 +15,7 @@ from course.forms import (
     TheoryEditForm,
     VehicleForm,
     CreateCategoryForm,
+    EditCategoryForm,
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -861,3 +862,32 @@ class CreateCategoryView(View):
         else:
             messages.error(request, "Wprowadzono niepoprawne dane")
             return redirect("/category/create")
+
+
+class EditCategoryView(View):
+    template = loader.get_template("category_edit.html")
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def get(self, request, category_symbol):
+        category = get_object_or_404(Category, pk=category_symbol)
+        context = {"category": category}
+        return HttpResponse(self.template.render(context, request))
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def post(self, request, category_symbol):
+        category = get_object_or_404(Category, pk=category_symbol)
+        form = EditCategoryForm(request.POST, request.FILES)
+        if form.is_valid():
+            category.description = form.cleaned_data["description"]
+            category.price = form.cleaned_data["price"]
+            category.required_practical_hours = form.cleaned_data[
+                "required_practical_hours"
+            ]
+            category.is_discount = form.cleaned_data["is_discount"]
+            category.discount_price = form.cleaned_data["discount_price"]
+            category.save()
+            messages.success(request, "Zapisano zmiany")
+            return redirect("/categories")
+        else:
+            messages.error(request, f"Wprowadzono niepoprawne dane: {form.errors}")
+            return redirect(f"/category/{category_symbol}/edit")

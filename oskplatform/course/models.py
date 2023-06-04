@@ -50,7 +50,8 @@ class Category(models.Model):
             CheckConstraint(
                 check=Q(discount_price__gte=0), name="discount_price_gte_0"
             ),
-            CheckConstraint(check=Q(price__gte=F("discount_price")), name="price_gte_discount_price")
+            CheckConstraint(check=Q(price__gte=F("discount_price")), name="price_gte_discount_price"),
+            CheckConstraint(check=((Q(is_discount=True) & Q(discount_price__isnull=False))|Q(is_discount=False)), name="is_discount_true_discount_price_not_null"),
         ]
     symbol = models.CharField(max_length=4, primary_key=True, unique=True, null=False)
     description = models.TextField(null=False)
