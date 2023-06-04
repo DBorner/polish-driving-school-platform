@@ -815,3 +815,13 @@ def delete_vehicle_view(request, vehicle_id):
     vehicle.delete()
     messages.success(request, "Usunięto pojazd")
     return redirect("/vehicles")
+
+
+class CategoriesView(View):
+    template = loader.get_template("categories.html")
+    
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def get(self, request):
+        categories = Category.objects.all()
+        context = {"categories": categories}
+        return HttpResponse(self.template.render(context, request))
