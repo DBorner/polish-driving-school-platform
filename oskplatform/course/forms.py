@@ -25,7 +25,7 @@ class EditStudentForm(forms.Form):
     email = forms.EmailField(max_length=50, label="Adres e-mail", required=False)
 
 
-class SetPasswordForm(SetPasswordForm):
+class NewPasswordForm(SetPasswordForm):
     class Meta:
         model = get_user_model()
         fields = ["new_password1", "new_password2"]

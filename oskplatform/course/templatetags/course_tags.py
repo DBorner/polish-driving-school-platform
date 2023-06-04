@@ -20,6 +20,14 @@ def get_student_account_username(value):
             return CustomUser.objects.get(student=student).username
     return None
 
+@register.filter(name='instructor_username')
+def get_instructor_account_username(value):
+    if Instructor.objects.filter(id=value).exists():
+        instructor = Instructor.objects.get(id=value)
+        if CustomUser.objects.filter(instructor=instructor).exists():
+            return CustomUser.objects.get(instructor=instructor).username
+    return None
+
 @register.filter(name='instructor_qualifications')
 def get_instructor_qualifications(value):
     if Instructor.objects.filter(id=value).exists():

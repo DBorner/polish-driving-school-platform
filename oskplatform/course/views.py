@@ -17,6 +17,7 @@ from course.forms import (
     CreateCategoryForm,
     EditCategoryForm,
     CreateQualificationForm,
+    NewPasswordForm,
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -61,6 +62,24 @@ class ProfileSettingsView(View):
             user_info = user.employee
         context = {"user_info": user_info}
         return HttpResponse(self.template.render(context, request))
+
+    @method_decorator(
+        requires_permissions(
+            permission_type=["S", "I", "E", "A"],
+            redirect_url="/login",
+            redirect_message="Musisz być zalogowanym",
+        )
+    )
+    def post(self, request):
+        user = request.user
+        form = NewPasswordForm(user, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Hasło zostało zmienione")
+            return redirect("/profile_settings")
+        else:
+            messages.error(request, "Podano nieprawidłowe hasło")
+            return redirect("/profile_settings")
 
 
 class UpcomingLessonsView(View):
