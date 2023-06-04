@@ -1,7 +1,7 @@
 from django.db import models
 from datetime import date, datetime
 from django.db.models.constraints import CheckConstraint
-from django.db.models import Q
+from django.db.models import Q, F
 
 vehicle_type_choices = [
     ("SO", "Samochód osobowy"),
@@ -40,6 +40,18 @@ class Vehicle(models.Model):
 
 
 class Category(models.Model):
+    class Meta:
+        constraints = [
+            CheckConstraint(
+                check=Q(required_practical_hours__gte=0),
+                name="required_practical_hours_gte_0",
+            ),
+            CheckConstraint(check=Q(price__gte=0), name="price_gte_0"),
+            CheckConstraint(
+                check=Q(discount_price__gte=0), name="discount_price_gte_0"
+            ),
+            CheckConstraint(check=Q(price__gte=F("discount_price")), name="price_gte_discount_price")
+        ]
     symbol = models.CharField(max_length=4, primary_key=True, unique=True, null=False)
     description = models.TextField(null=False)
     required_practical_hours = models.IntegerField(null=False, default=0)

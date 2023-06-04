@@ -14,7 +14,7 @@ from course.forms import (
     NewTheoryForm,
     TheoryEditForm,
     VehicleForm,
-    CreateCategoryForm
+    CreateCategoryForm,
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
