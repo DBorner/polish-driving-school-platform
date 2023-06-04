@@ -954,3 +954,12 @@ class InstructorsView(View):
                     temp_instructors.append(instructor)
             return temp_instructors
         return instructors
+
+
+@requires_permissions(permission_type=["E", "A"])
+def change_instructor_availability_view(request, instructor_id):
+    instructor = get_object_or_404(Instructor, pk=instructor_id)
+    instructor.is_active = not instructor.is_active
+    instructor.save()
+    messages.success(request, "Zmieniono dostępność instruktora")
+    return redirect("/instructors")
