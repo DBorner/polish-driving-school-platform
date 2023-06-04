@@ -98,14 +98,25 @@ class EditCourseForm(forms.Form):
 
 
 class NewTheoryForm(forms.ModelForm):
-    
     class Meta:
         model = TheoryCourse
         fields = ["type", "start_date", "instructor"]
 
 
 class TheoryEditForm(forms.ModelForm):
-    
     class Meta:
         model = TheoryCourse
         fields = ["type", "start_date", "instructor"]
+
+
+class CreateVehicleForm(forms.ModelForm):
+    class Meta:
+        model = Vehicle
+        fields = [
+            "brand",
+            "model",
+            "year_of_production",
+            "registration_number",
+            "gearbox_type",
+            "type",
+        ]

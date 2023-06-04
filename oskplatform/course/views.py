@@ -13,6 +13,7 @@ from course.forms import (
     EditStudentForm,
     NewTheoryForm,
     TheoryEditForm,
+    CreateVehicleForm,
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -746,12 +747,41 @@ class VehiclesView(View):
         return vehicles
 
 
+class CreateVehicleView(View):
+    template = loader.get_template("vehicle_create.html")
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def get(self, request):
+        return HttpResponse(self.template.render({}, request))
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def post(self, request):
+        form = CreateVehicleForm(request.POST)
+        if form.is_valid():
+            vehicle = Vehicle(
+                registration_number=form.cleaned_data["registration_number"],
+                brand=form.cleaned_data["brand"],
+                model=form.cleaned_data["model"],
+                year_of_production=form.cleaned_data["year_of_production"],
+                gearbox_type=form.cleaned_data["gearbox_type"],
+                type=form.cleaned_data["type"],
+                is_available=True,
+            )
+            vehicle.save()
+            messages.success(request, "Dodano pojazd")
+            return redirect("/vehicles")
+        else:
+            messages.error(request, "Wprowadzono niepoprawne dane")
+            return redirect("/vehicle/create")
+
+
 @requires_permissions(permission_type=["E", "A"])
 def delete_vehicle_view(request, vehicle_id):
     vehicle = get_object_or_404(Vehicle, pk=vehicle_id)
     if PracticalLesson.objects.filter(vehicle=vehicle).exists():
         messages.error(
-            request, "Nie można usunąć pojazdu, który jest przypisany do jazd praktycznych"
+            request,
+            "Nie można usunąć pojazdu, który jest przypisany do jazd praktycznych",
         )
         return redirect("/vehicles")
     vehicle.delete()
