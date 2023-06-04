@@ -63,5 +63,10 @@ urlpatterns = [
     path('qualification/<int:qualification_id>/delete/', course_views.delete_qualification_view),
     path('employees/', course_views.EmployeesView.as_view(), name='employees'),
     path('employees/<int:employee_id>/edit', course_views.EditEmployeeView.as_view()),
+    path('employees/<int:employee_id>/delete', course_views.delete_employee_view),
+    path('employees/<int:employee_id>/delete_account', course_views.delete_account_of_employee_view),
+    path('employees/<int:employee_id>/generate_password', course_views.generate_new_password_for_employee_view),
+    path('employees/<int:employee_id>/create_account', course_views.create_account_for_employee_view),
+    path('employees/<int:employee_id>/change_permissions', course_views.change_employee_permissions_type_view),
     path('', platform_views.HomeView.as_view(), name='home'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

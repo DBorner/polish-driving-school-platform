@@ -1196,7 +1196,8 @@ class RegisterEmployeeView(View):
             next_user_id = CustomUser.objects.order_by("-pk")[0].pk + 1
             username = f"{employee.surname.lower()[:3]}{employee.name.lower()[:3]}{next_user_id}"
             password = generate_password()
-            if request.POST.get("permissions_type") == "A":
+            print(request.POST.get("is_admin"))
+            if request.POST.get("is_admin") == 'on':
                 permissions_type = "A"
             else:
                 permissions_type = "E"
@@ -1239,3 +1240,90 @@ class EditEmployeeView(View):
         else:
             messages.error(request, "Wprowadzono niepoprawne dane")
             return redirect(f"/employee/{employee_id}/edit/")
+
+
+@requires_permissions(permission_type=["A"])
+def delete_employee_view(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    if request.user.employee == employee:
+        messages.error(request, "Nie możesz usunąć samego siebie")
+        return redirect("/employees/")
+    employee.delete()
+    messages.success(request, "Usunięto pracownika")
+    return redirect("/employees/")
+
+
+@requires_permissions(permission_type=["A"])
+def change_employee_permissions_type_view(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    if request.user.employee == employee:
+        messages.error(request, "Nie możesz zmienić uprawnień samemu sobie")
+        return redirect("/employees/")
+    user = get_object_or_404(CustomUser, employee=employee)
+    if user.permissions_type == "A":
+        user.permissions_type = "E"
+    else:
+        user.permissions_type = "A"
+    user.save()
+    messages.success(request, "Zmieniono uprawnienia pracownika")
+    return redirect("/employees/")
+
+
+@requires_permissions(permission_type=["A"])
+def generate_new_password_for_employee_view(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    if request.user.employee == employee:
+        messages.error(request, "Nie możesz zmienić hasła samemu sobie")
+        return redirect("/employees/")
+    user = get_object_or_404(CustomUser, employee=employee)
+    password = generate_password()
+    user.set_password(password)
+    user.save()
+    messages.success(
+        request,
+        f"""Zmieniono hasło pracownika {employee.full_name} - dane logowania:
+                 Login: {user.username}
+                 Hasło: {password}""",
+    )
+    return redirect("/employees/")
+
+
+@requires_permissions(permission_type=["A"])
+def delete_account_of_employee_view(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    if request.user.employee == employee:
+        messages.error(request, "Nie możesz usunąć swojego konta")
+        return redirect("/employees/")
+    user = get_object_or_404(CustomUser, employee=employee)
+    user.delete()
+    messages.success(request, "Usunięto konto pracownika")
+    return redirect("/employees/")
+
+
+@requires_permissions(permission_type=["A"])
+def create_account_for_employee_view(request, employee_id):
+    employee = get_object_or_404(Employee, pk=employee_id)
+    if request.user.employee == employee:
+        messages.error(request, "Nie możesz utworzyć konta samemu sobie")
+        return redirect("/employees/")
+    if CustomUser.objects.filter(employee=employee).exists():
+        messages.error(request, "Konto dla tego pracownika już istnieje")
+        return redirect("/employees/")
+    next_user_id = CustomUser.objects.order_by("-pk")[0].pk + 1
+    username = (
+        f"{employee.surname.lower()[:3]}{employee.name.lower()[:3]}{next_user_id}"
+    )
+    password = generate_password()
+    CustomUser.objects.create_user(
+        username=username,
+        password=password,
+        permissions_type="E",
+        employee=employee,
+    )
+    messages.success(
+        request,
+        f"""Utworzono konto dla pracownika {employee.full_name} - dane logowania:
+                    Login: {username}
+                    Hasło: {password}""",
+    )
+    return redirect("/employees/")
