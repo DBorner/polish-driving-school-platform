@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required
-from users.models import CustomUser, Student, Instructor, Qualification
+from users.models import CustomUser, Student, Instructor, Qualification, Employee
 from course.models import PracticalLesson, Course, Category, Vehicle, TheoryCourse
 from django.utils import timezone
 from course.forms import (
@@ -1162,3 +1162,18 @@ def delete_qualification_view(request, qualification_id):
     qualification.delete()
     messages.success(request, "Usunięto kwalifikację")
     return redirect(f"/qualifications/{qualification.instructor.id}/")
+
+class EmployeesView(View):
+    template = loader.get_template("employees.html")
+
+    @method_decorator(requires_permissions(permission_type=["A"]))
+    def get(self, request):
+        if request.GET.get("q"):
+            employees = Employee.objects.filter(
+                Q(name__icontains=request.GET.get("q"))
+                | Q(surname__icontains=request.GET.get("q"))
+            )
+        else:
+            employees = Employee.objects.all()
+        context = {"employees": employees}
+        return HttpResponse(self.template.render(context, request))

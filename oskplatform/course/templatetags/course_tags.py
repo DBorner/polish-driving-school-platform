@@ -1,6 +1,6 @@
 from django import template
 from course.models import Course
-from users.models import Student, CustomUser, Qualification, Instructor
+from users.models import Student, CustomUser, Qualification, Instructor, Employee
 
 register = template.Library()
 
@@ -26,6 +26,14 @@ def get_instructor_account_username(value):
         instructor = Instructor.objects.get(id=value)
         if CustomUser.objects.filter(instructor=instructor).exists():
             return CustomUser.objects.get(instructor=instructor).username
+    return None
+
+@register.filter(name='employee_username')
+def get_employer_account_username(value):
+    if Employee.objects.filter(id=value).exists():
+        employee = Employee.objects.get(id=value)
+        if CustomUser.objects.filter(employee=employee).exists():
+            return CustomUser.objects.get(employee=employee).username
     return None
 
 @register.filter(name='instructor_qualifications')

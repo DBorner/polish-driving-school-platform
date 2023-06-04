@@ -60,5 +60,6 @@ urlpatterns = [
     path('qualifications/<int:instructor_id>/', course_views.QualificationsView.as_view()),
     path('qualification/<int:instructor_id>/add/', course_views.CreateQualificationView.as_view()),
     path('qualification/<int:qualification_id>/delete/', course_views.delete_qualification_view),
+    path('employees/', course_views.EmployeesView.as_view(), name='employees'),
     path('', platform_views.HomeView.as_view(), name='home'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
