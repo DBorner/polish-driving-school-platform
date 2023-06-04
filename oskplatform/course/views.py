@@ -16,7 +16,7 @@ from course.forms import (
     VehicleForm,
     CreateCategoryForm,
     EditCategoryForm,
-    CreateQualificationForm
+    CreateQualificationForm,
 )
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
@@ -979,22 +979,23 @@ class QualificationsView(View):
 
 class CreateQualificationView(View):
     template = loader.get_template("qualification_create.html")
-    
+
     @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def get(self, request, instructor_id):
         instructor = get_object_or_404(Instructor, pk=instructor_id)
         categories = Category.objects.all()
-        context = {"instructor": instructor,
-                   "categories": categories}
+        context = {"instructor": instructor, "categories": categories}
         return HttpResponse(self.template.render(context, request))
-    
+
     @method_decorator(requires_permissions(permission_type=["E", "A"]))
     def post(self, request, instructor_id):
         instructor = get_object_or_404(Instructor, pk=instructor_id)
         form = CreateQualificationForm(request.POST)
         if form.is_valid():
             qualification = form.save(commit=False)
-            if Qualification.objects.filter(instructor=instructor, category=qualification.category).exists():
+            if Qualification.objects.filter(
+                instructor=instructor, category=qualification.category
+            ).exists():
                 messages.error(request, "Instruktor posiada już taką kwalifikację")
                 return redirect(f"/qualification/{instructor_id}/add/")
             qualification.instructor = instructor
@@ -1004,3 +1005,11 @@ class CreateQualificationView(View):
         else:
             messages.error(request, "Wprowadzono niepoprawne dane")
             return redirect(f"/qualification/{instructor_id}/add/")
+
+
+@requires_permissions(permission_type=["E", "A"])
+def delete_qualification_view(request, qualification_id):
+    qualification = get_object_or_404(Qualification, pk=qualification_id)
+    qualification.delete()
+    messages.success(request, "Usunięto kwalifikację")
+    return redirect(f"/qualifications/{qualification.instructor.id}/")
