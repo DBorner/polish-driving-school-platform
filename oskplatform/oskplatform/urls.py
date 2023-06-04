@@ -39,5 +39,7 @@ urlpatterns = [
     path('theory/<int:theory_id>/edit/', course_views.EditTheoryView.as_view()),
     path('theory/<int:theory_id>/delete/', course_views.delete_theory_view),
     path('theories/', course_views.TheoriesView.as_view(), name='theories'),
+    path('vehicles/', course_views.VehiclesView.as_view(), name='vehicles'),
+    path('vehicle/<int:vehicle_id>/delete/', course_views.delete_vehicle_view),
     path('', platform_views.HomeView.as_view(), name='home'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

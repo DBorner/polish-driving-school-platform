@@ -697,3 +697,63 @@ def delete_theory_view(request, theory_id):
     theory.delete()
     messages.success(request, "Usunięto wykład")
     return redirect("/theories")
+
+
+class VehiclesView(View):
+    template = loader.get_template("vehicles.html")
+
+    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    def get(self, request):
+        if request.GET.get("q") != None:
+            vehicles = self._search_results(request)
+        else:
+            vehicles = Vehicle.objects.all()
+        context = {"vehicles": vehicles}
+        return HttpResponse(self.template.render(context, request))
+
+    def _search_results(self, request):
+        query = request.GET.get("q")
+        vehicles = Vehicle.objects.filter(
+            Q(registration_number__icontains=query)
+            | Q(brand__icontains=query)
+            | Q(model__icontains=query)
+            | Q(year_of_production__icontains=query)
+        )
+        if request.GET.get("type") != "all":
+            temp_vehicles = []
+            for vehicle in vehicles:
+                if vehicle.type == request.GET.get("type"):
+                    temp_vehicles.append(vehicle)
+            vehicles = temp_vehicles
+        if request.GET.get("gearbox") != "all":
+            temp_vehicles = []
+            for vehicle in vehicles:
+                if vehicle.gearbox_type == request.GET.get("gearbox"):
+                    temp_vehicles.append(vehicle)
+            vehicles = temp_vehicles
+        if request.GET.get("is_available") == "Yes":
+            temp_vehicles = []
+            for vehicle in vehicles:
+                if vehicle.is_available:
+                    temp_vehicles.append(vehicle)
+            vehicles = temp_vehicles
+        elif request.GET.get("is_available") == "No":
+            temp_vehicles = []
+            for vehicle in vehicles:
+                if not vehicle.is_available:
+                    temp_vehicles.append(vehicle)
+            vehicles = temp_vehicles
+        return vehicles
+
+
+@requires_permissions(permission_type=["E", "A"])
+def delete_vehicle_view(request, vehicle_id):
+    vehicle = get_object_or_404(Vehicle, pk=vehicle_id)
+    if PracticalLesson.objects.filter(vehicle=vehicle).exists():
+        messages.error(
+            request, "Nie można usunąć pojazdu, który jest przypisany do jazd praktycznych"
+        )
+        return redirect("/vehicles")
+    vehicle.delete()
+    messages.success(request, "Usunięto pojazd")
+    return redirect("/vehicles")
