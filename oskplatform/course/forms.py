@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import get_user_model
-from users.models import Instructor, Student
+from users.models import Instructor, Student, Qualification
 from course.models import Vehicle, Course, Category, TheoryCourse
 
 
@@ -135,6 +135,7 @@ class CreateCategoryForm(forms.ModelForm):
             "photo",
         ]
 
+
 class EditCategoryForm(forms.ModelForm):
     class Meta:
         model = Category
@@ -146,3 +147,9 @@ class EditCategoryForm(forms.ModelForm):
             "discount_price",
             "photo",
         ]
+
+
+class CreateQualificationForm(forms.ModelForm):
+    class Meta:
+        model = Qualification
+        fields = ["category", "date_of_achievement"]

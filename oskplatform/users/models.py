@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-from course.models import Course
+from datetime import date
+from django.db.models import Q
 
 class Student(models.Model):
     id = models.AutoField(primary_key=True)
@@ -45,6 +46,11 @@ class Employee(models.Model):
         return f'{self.id} - {self.surname} {self.name}'
     
 class Qualification(models.Model):
+    class Meta:
+        unique_together = (('instructor', 'category'),)
+        constraints = [
+            models.CheckConstraint(check=Q(date_of_achievement__lte=date.today()), name='date_of_achievement_lte_today')
+        ]
     id = models.AutoField(primary_key=True)
     date_of_achievement = models.DateField(null=False)
     instructor = models.ForeignKey(Instructor, on_delete=models.CASCADE, null=False)

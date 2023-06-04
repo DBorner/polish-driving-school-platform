@@ -52,5 +52,6 @@ urlpatterns = [
     path('instructors/', course_views.InstructorsView.as_view(), name='instructors'),
     path('instructor/<int:instructor_id>/change_status/', course_views.change_instructor_availability_view),
     path('qualifications/<int:instructor_id>/', course_views.QualificationsView.as_view()),
+    path('qualification/<int:instructor_id>/add/', course_views.CreateQualificationView.as_view()),
     path('', platform_views.HomeView.as_view(), name='home'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
