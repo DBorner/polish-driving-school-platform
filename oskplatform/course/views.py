@@ -211,6 +211,10 @@ def change_practical_lesson_status_view(request, practical_id):
         messages.error(request, "Nie posiadasz wymaganych uprawnień")
         return redirect(f"/practical/{practical_id}")
     if lesson.is_cancelled:
+        if PracticalLesson.objects.filter(
+            instructor=lesson.instructor, date=lesson.date, start_time=lesson.start_time, is_cancelled=False).exists():
+            messages.error(request, "Nie można zapisać dwóch jazd w tym samym czasie")
+            return redirect(f"/practical/{practical_id}")
         lesson.is_cancelled = False
     else:
         lesson.is_cancelled = True
@@ -277,6 +281,16 @@ class EditPracticalLessonView(View):
             return redirect(f"/practical/{practical_id}")
         form = EditPracticalLessonForm(request.POST)
         if form.is_valid():
+            if PracticalLesson.objects.filter(
+                instructor=request.user.instructor,
+                date=form.cleaned_data["date"],
+                start_time=form.cleaned_data["start_time"],
+                is_cancelled=False,
+            ).exists():
+                messages.error(
+                    request, "Nie można zapisać dwóch jazd w tym samym czasie"
+                )
+                return redirect(f"/practical/{practical_id}/edit")
             lesson.cost = form.cleaned_data["cost"]
             lesson.date = form.cleaned_data["date"]
             lesson.start_time = form.cleaned_data["start_time"]
@@ -302,10 +316,6 @@ class CreatePracticalLessonView(View):
             instructor=request.user.instructor
         ):
             instructor_qualifications.append(qualification.category)
-
-        if request.user.permissions_type != "I":
-            messages.error(request, "Nie masz uprawnień do tej strony")
-            return redirect("/upcoming_lessons")
 
         if course_id != None:
             selected_course = get_object_or_404(Course, pk=course_id)
@@ -358,16 +368,19 @@ class CreatePracticalLessonView(View):
             if form.cleaned_data["date"] < timezone.now().date():
                 messages.error(request, "Nie można dodać jazdy, która już się odbyła")
                 return redirect("/practical/create")
-            PracticalLesson.objects.create(
-                course=form.cleaned_data["course"],
+            if PracticalLesson.objects.filter(
+                instructor=request.user.instructor,
                 date=form.cleaned_data["date"],
                 start_time=form.cleaned_data["start_time"],
-                num_of_hours=form.cleaned_data["num_of_hours"],
-                num_of_km=form.cleaned_data["num_of_km"],
-                cost=form.cleaned_data["cost"],
-                instructor=request.user.instructor,
-                vehicle=form.cleaned_data["vehicle"],
-            )
+                is_cancelled=False,
+            ).exists():
+                messages.error(
+                    request, "Nie można zapisać dwóch jazd w tym samym czasie"
+                )
+                return redirect("/practical/create")
+            practical_lesson = form.save(commit=False)
+            practical_lesson.instructor = request.user.instructor
+            practical_lesson.save()
             messages.success(request, "Dodano nową jazdę")
             return redirect("/upcoming_lessons")
         else:

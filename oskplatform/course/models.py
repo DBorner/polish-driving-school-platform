@@ -149,7 +149,9 @@ class TheoryCourse(models.Model):
 
 class PracticalLesson(models.Model):
     class Meta:
-        models.UniqueConstraint(condition=Q(is_cancelled=False), fields=["date", "start_time", "instructor"], name="unique_practical_lesson")
+        constraints = [
+            models.UniqueConstraint(condition=Q(is_cancelled=False), fields=["date", "start_time", "instructor"], name="unique_practical_lesson")
+        ]
     id = models.AutoField(primary_key=True)
     date = models.DateField(null=False)
     start_time = models.TimeField(null=False)

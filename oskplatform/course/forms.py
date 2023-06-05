@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth import get_user_model
 from users.models import Instructor, Student, Qualification, Employee
-from course.models import Vehicle, Course, Category, TheoryCourse
+from course.models import Vehicle, Course, Category, TheoryCourse, PracticalLesson
 
 
 class NewStudentForm(forms.Form):
@@ -26,7 +26,8 @@ class InstructorForm(forms.ModelForm):
             "phone_number",
             "instructor_id",
         ]
-        
+
+
 class EmployeeForm(forms.ModelForm):
     class Meta:
         model = Employee
@@ -54,42 +55,31 @@ class NewPasswordForm(SetPasswordForm):
         fields = ["new_password1", "new_password2"]
 
 
-class EditPracticalLessonForm(forms.Form):
-    date = forms.DateField(label="Data")
-    start_time = forms.TimeField(label="Godzina rozpoczęcia")
-    num_of_hours = forms.IntegerField(label="Liczba godzin", min_value=1, max_value=10)
-    num_of_km = forms.IntegerField(
-        label="Liczba kilometrów", required=False, min_value=0
-    )
-    cost = forms.DecimalField(
-        max_digits=10, decimal_places=2, label="Koszt", required=False, min_value=0
-    )
-    instructor = forms.ModelChoiceField(
-        queryset=Instructor.objects.all(), label="Instruktor"
-    )
-    vehicle = forms.ModelChoiceField(
-        queryset=Vehicle.objects.filter(is_available="True"),
-        label="Pojazd",
-        required=False,
-    )
+class EditPracticalLessonForm(forms.ModelForm):
+    class Meta:
+        model = PracticalLesson
+        fields = [
+            "date",
+            "start_time",
+            "num_of_hours",
+            "num_of_km",
+            "cost",
+            "vehicle",
+        ]
 
 
-class CreatePracticalLessonForm(forms.Form):
-    course = forms.ModelChoiceField(queryset=Course.objects.all(), label="Kurs")
-    date = forms.DateField(label="Data")
-    start_time = forms.TimeField(label="Godzina rozpoczęcia")
-    num_of_hours = forms.IntegerField(label="Liczba godzin", min_value=1, max_value=10)
-    num_of_km = forms.IntegerField(
-        label="Liczba kilometrów", required=False, min_value=0
-    )
-    cost = forms.DecimalField(
-        max_digits=10, decimal_places=2, label="Koszt", required=False, min_value=0
-    )
-    vehicle = forms.ModelChoiceField(
-        queryset=Vehicle.objects.filter(is_available="True"),
-        label="Pojazd",
-        required=False,
-    )
+class CreatePracticalLessonForm(forms.ModelForm):
+    class Meta:
+        model = PracticalLesson
+        fields = [
+            "course",
+            "date",
+            "start_time",
+            "num_of_hours",
+            "num_of_km",
+            "cost",
+            "vehicle",
+        ]
 
 
 class CreateCourseForm(forms.Form):
