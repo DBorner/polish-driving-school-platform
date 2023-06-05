@@ -1,6 +1,5 @@
 from django.test import TestCase
-from datetime import date
-from users.models import Student, Instructor, Employee, Qualification, CustomUser
+from users.models import CustomUser
 
 
 class LoginViewTest(TestCase):

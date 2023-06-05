@@ -1,5 +1,5 @@
-
 from .models import Instructor, Qualification
+
 
 def get_instructor_qualifications(instructor_id: int):
     if not Instructor.objects.filter(pk=instructor_id).exists():
