@@ -427,6 +427,9 @@ class CreateCourseView(View):
         if form.is_valid() and check_instructor_qualifications(
             form.cleaned_data["instructor"], form.cleaned_data["category"]
         ):
+            if len(form.cleaned_data['pkk_number']) != 20:
+                messages.error(request, "Numer PKK musi mieć 20 cyfr")
+                return redirect("/courses/create")
             Course.objects.create(
                 pkk_number=form.cleaned_data["pkk_number"],
                 cost=form.cleaned_data["cost"],
