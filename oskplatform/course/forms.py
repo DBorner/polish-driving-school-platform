@@ -103,7 +103,7 @@ class EditCourseForm(forms.ModelForm):
         model = Course
         fields = [
             "instructor",
-            'status'
+            'course_status',
         ]
 
 
