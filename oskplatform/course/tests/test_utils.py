@@ -189,7 +189,21 @@ class CheckStartDateForTheoryCourseTest(TestCase):
         self.assertFalse(check_start_date_for_theory_course(None, None))
 
     def test_check_start_date_for_theory_course_with_course(self):
-        self.assertTrue(check_start_date_for_theory_course(self.theory.start_date, self.theory.type))
-        self.assertTrue(check_start_date_for_theory_course(self.theory2.start_date, self.theory2.type))
-        self.assertFalse(check_start_date_for_theory_course(self.theory3.start_date, self.theory3.type))
-        self.assertFalse(check_start_date_for_theory_course(self.theory4.start_date, self.theory4.type))
+        self.assertTrue(
+            check_start_date_for_theory_course(self.theory.start_date, self.theory.type)
+        )
+        self.assertTrue(
+            check_start_date_for_theory_course(
+                self.theory2.start_date, self.theory2.type
+            )
+        )
+        self.assertFalse(
+            check_start_date_for_theory_course(
+                self.theory3.start_date, self.theory3.type
+            )
+        )
+        self.assertFalse(
+            check_start_date_for_theory_course(
+                self.theory4.start_date, self.theory4.type
+            )
+        )
