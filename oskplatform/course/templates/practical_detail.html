@@ -95,7 +95,7 @@
               <span class="small text-secondary">Pojazd</span>
             </div>
             {% if lesson.is_vehicle_filled %}
-            <span class="small">{{lesson.vehicle.brand}} {{lesson.vehicle.model}} {{lesson.vehicle.year_of_production}} </span>
+            <span class="small">{{lesson.vehicle.brand}} {{lesson.vehicle.model}} {{lesson.vehicle.year_of_production}} - {{lesson.vehicle.registration_number}} </span>
             {% else %}
             <span class="small">Nie uzupełniono</span>
             {% endif %}

@@ -286,7 +286,12 @@ class EditPracticalLessonView(View):
                 date=form.cleaned_data["date"],
                 start_time=form.cleaned_data["start_time"],
                 is_cancelled=False,
-            ).exists():
+            ).exists() and lesson != PracticalLesson.objects.filter(
+                instructor=request.user.instructor,
+                date=form.cleaned_data["date"],
+                start_time=form.cleaned_data["start_time"],
+                is_cancelled=False,
+            ).first():
                 messages.error(
                     request, "Nie można zapisać dwóch jazd w tym samym czasie"
                 )
