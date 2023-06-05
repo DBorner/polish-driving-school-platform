@@ -17,14 +17,13 @@ def check_instructor_qualifications(instructor, category):
     return False
 
 
-def get_course_dates(theory_id):
-    course = TheoryCourse.objects.get(pk=theory_id)
-    if course == None:
+def get_course_dates(theory_id: int):
+    if not TheoryCourse.objects.filter(pk=theory_id).exists():
         return None
+    course = TheoryCourse.objects.get(pk=theory_id)
     dates = []
     if course.type == "T":
         if course.start_date.weekday() != 0:
-            print("Wrong start date")
             return None
         dates.append((course.start_date, ("8:00", "14:00")))
         dates.append(
@@ -42,7 +41,6 @@ def get_course_dates(theory_id):
         return dates
     else:
         if course.start_date.weekday() != 5:
-            print("Wrong start date")
             return None
         dates.append((course.start_date, ("8:00", "16:00")))
         dates.append(
@@ -88,9 +86,11 @@ def generate_password():
     return pwo.generate()
 
 
-def check_start_date_for_theory_course(start_date, type):
-        if datetime.date.strftime(start_date, "%A") == "Monday" and type == "T":
-            return True
-        elif datetime.date.strftime(start_date, "%A") == "Saturday" and type == "W":
-            return True
+def check_start_date_for_theory_course(start_date: datetime, type: str):
+    if start_date == None or type == None:
         return False
+    if datetime.date.strftime(start_date, "%A") == "Monday" and type == "T":
+        return True
+    elif datetime.date.strftime(start_date, "%A") == "Saturday" and type == "W":
+        return True
+    return False
