@@ -62,9 +62,13 @@ class QualificationModelTest(TestCase):
             phone_number="123456789",
             instructor_id="123456789",
         )
-        self.category = Category.objects.create(symbol="A", price=100, required_practical_hours=10)
+        self.category = Category.objects.create(
+            symbol="A", price=100, required_practical_hours=10
+        )
         self.qualification = Qualification.objects.create(
-            instructor=self.instructor, category=self.category, date_of_achievement=date(2020, 1, 1)
+            instructor=self.instructor,
+            category=self.category,
+            date_of_achievement=date(2020, 1, 1),
         )
 
     def test_str_method(self):
@@ -75,8 +79,10 @@ class CustomUserMenagerTest(TestCase):
     def test_no_username(self):
         with self.assertRaises(ValueError):
             CustomUser.objects.create_user(username=None, email="", password="test")
-    
+
     def test_user_creation(self):
-        user = CustomUser.objects.create_user(username="test", email="", password="test")
+        user = CustomUser.objects.create_user(
+            username="test", email="", password="test"
+        )
         self.assertEqual(user.username, "test")
         self.assertEqual(user.check_password("test"), True)

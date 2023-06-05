@@ -4,7 +4,7 @@ from django.template import loader
 from course.models import Category, Vehicle, TheoryCourse
 from course.utils import get_course_dates
 from users.models import Instructor
-from users.utils import get_inctructor_qualifications
+from users.utils import get_instructor_qualifications
 from django.views import View
 import datetime
 
@@ -47,7 +47,7 @@ class InstructorsView(View):
         instructors_qualifications = []
         for instructor in instructors:
             instructors_qualifications.append(
-                (instructor, get_inctructor_qualifications(instructor["id"]))
+                (instructor, get_instructor_qualifications(instructor["id"]))
             )
         context = {"instructors": instructors_qualifications}
         return HttpResponse(template.render(context, request))

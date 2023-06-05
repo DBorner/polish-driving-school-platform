@@ -1,9 +1,9 @@
 
 from .models import Instructor, Qualification
 
-def get_inctructor_qualifications(instructor_id):
-    instructor = Instructor.objects.get(pk=instructor_id)
-    if instructor is None:
+def get_instructor_qualifications(instructor_id: int):
+    if not Instructor.objects.filter(pk=instructor_id).exists():
         return None
+    instructor = Instructor.objects.get(pk=instructor_id)
     qualifications = Qualification.objects.all().filter(instructor=instructor)
     return qualifications
