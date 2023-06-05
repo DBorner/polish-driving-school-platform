@@ -5,14 +5,16 @@ from users.models import Instructor, Student, Qualification, Employee
 from course.models import Vehicle, Course, Category, TheoryCourse, PracticalLesson
 
 
-class NewStudentForm(forms.Form):
-    surname = forms.CharField(max_length=50, min_length=3, label="Nazwisko")
-    name = forms.CharField(max_length=50, min_length=3, label="Imię")
-    birth_date = forms.DateField(label="Data urodzenia")
-    phone_number = forms.CharField(
-        max_length=20, label="Numer telefonu", required=False
-    )
-    email = forms.EmailField(max_length=50, label="Adres e-mail", required=False)
+class NewStudentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = [
+            "surname",
+            "name",
+            "birth_date",
+            "phone_number",
+            "email",
+        ]
 
 
 class InstructorForm(forms.ModelForm):
@@ -39,14 +41,16 @@ class EmployeeForm(forms.ModelForm):
         ]
 
 
-class EditStudentForm(forms.Form):
-    surname = forms.CharField(max_length=50, min_length=3, label="Nazwisko")
-    name = forms.CharField(max_length=50, min_length=3, label="Imię")
-    birth_date = forms.DateField(label="Data urodzenia")
-    phone_number = forms.CharField(
-        max_length=20, label="Numer telefonu", required=False
-    )
-    email = forms.EmailField(max_length=50, label="Adres e-mail", required=False)
+class EditStudentForm(forms.ModelForm):
+    class Meta:
+        model = Student
+        fields = [
+            "surname",
+            "name",
+            "birth_date",
+            "phone_number",
+            "email",
+        ]
 
 
 class NewPasswordForm(SetPasswordForm):
@@ -82,32 +86,25 @@ class CreatePracticalLessonForm(forms.ModelForm):
         ]
 
 
-class CreateCourseForm(forms.Form):
-    pkk_number = forms.CharField(max_length=20, min_length=20, label="Numer PKK")
-    cost = forms.DecimalField(max_digits=10, decimal_places=2, label="Koszt")
-    category = forms.ModelChoiceField(
-        queryset=Category.objects.filter(is_available="True"), label="Kategoria"
-    )
-    student = forms.ModelChoiceField(queryset=Student.objects.all(), label="Kursant")
-    instructor = forms.ModelChoiceField(
-        queryset=Instructor.objects.filter(is_active="True"),
-        label="Instruktor",
-        required=False,
-    )
+class CreateCourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = [
+            "pkk_number",
+            "cost",
+            "category",
+            "student",
+            "instructor",
+        ]
 
 
-class EditCourseForm(forms.Form):
-    instructor = forms.ModelChoiceField(
-        queryset=Instructor.objects.filter(is_active="True"),
-        label="Instruktor",
-        required=False,
-    )
-    course_status_choices = [
-        ("R", "Rozpoczęty"),
-        ("Z", "Zakończony"),
-        ("A", "Anulowany"),
-    ]
-    status = forms.ChoiceField(choices=course_status_choices, label="Status kursu")
+class EditCourseForm(forms.ModelForm):
+    class Meta:
+        model = Course
+        fields = [
+            "instructor",
+            'status'
+        ]
 
 
 class NewTheoryForm(forms.ModelForm):
