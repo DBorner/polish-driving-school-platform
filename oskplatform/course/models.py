@@ -16,6 +16,15 @@ gearbox_type_choices = [("M", "Manualna"), ("A", "Automatyczna"), ("N", "Nie dot
 
 
 class Vehicle(models.Model):
+    class Meta:
+        constraints = [
+            CheckConstraint(check=Q(year_of_production__gte=1900), name="year_gte_1900"),
+            CheckConstraint(
+                check=Q(year_of_production__lte=date.today().year),
+                name="year_lte_current_year",
+            )
+        ]
+    
     id = models.AutoField(primary_key=True)
     registration_number = models.CharField(max_length=15, null=False)
     type = models.CharField(
@@ -87,6 +96,10 @@ course_status_choices = [
 
 
 class Course(models.Model):
+    class Meta:
+        constraints = [
+            CheckConstraint(check=Q(cost__gte=0), name="course_cost_gte_0"),
+        ]
     id = models.AutoField(primary_key=True)
     pkk_number = models.CharField(max_length=20, null=False)
     cost = models.DecimalField(max_digits=10, decimal_places=2, null=False)
@@ -119,13 +132,6 @@ theory_type_choices = [
 
 
 class TheoryCourse(models.Model):
-    class Meta:
-        constraints = [
-            CheckConstraint(
-                check=Q(start_date__gte=date.today()), name="start_date_gte_today"
-            )
-        ]
-
     id = models.AutoField(primary_key=True)
     type = models.CharField(
         max_length=1, choices=theory_type_choices, default="T", null=False
@@ -149,7 +155,12 @@ class TheoryCourse(models.Model):
 
 class PracticalLesson(models.Model):
     class Meta:
-        models.UniqueConstraint(condition=Q(is_cancelled=False), fields=["date", "start_time", "instructor"], name="unique_practical_lesson")
+        constraints = [
+            models.UniqueConstraint(condition=Q(is_cancelled=False), fields=["date", "start_time", "instructor"], name="unique_practical_lesson"),
+            CheckConstraint(check=Q(num_of_hours__gt=0), name="num_of_hours_gte_0"),
+            CheckConstraint(check=Q(num_of_km__gt=0), name="num_of_km_gte_0"),
+            CheckConstraint(check=Q(cost__gt=0), name="practical_cost_gte_0"),
+        ]
     id = models.AutoField(primary_key=True)
     date = models.DateField(null=False)
     start_time = models.TimeField(null=False)

@@ -113,7 +113,7 @@
             </div>
             <span class="small"><select name="vehicle">
                 {% for vehicle in vehicles %}
-                <option value={{vehicle.id}}>{{vehicle.brand}} {{vehicle.model}} {{vehicle.year_of_production}}</option>
+                <option value={{vehicle.id}}>{{vehicle.brand}} {{vehicle.model}} {{vehicle.year_of_production}} - {{vehicle.registration_number}}</option>
                 {% endfor %}
               </select></span>
           </div>

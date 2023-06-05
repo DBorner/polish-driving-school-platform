@@ -1,0 +1,9 @@
+Django==4.2.1
+model_bakery==1.12.0
+random_password_generator==2.2.0
+crispy-bootstrap5==0.7
+django-bootstrap-v5==1.0.11
+django-crispy-forms==2.0
+djlint==1.30.2
+Pillow==9.5.0
+pytest-django==4.5.2
