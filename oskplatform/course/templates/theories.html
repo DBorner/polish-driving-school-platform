@@ -10,6 +10,7 @@
     <div class="container">
       <div class="px-4 pb-4 mb-6 bg-white rounded shadow">
         <div class="pt-4 pb-5 px-6 border-bottom border-secondary-light">
+        {% if user.permissions_type != 'I' %}
         <form action={% url 'theories' %} method='get'>
             <span class="small">
                 <label for="instructor" class="small">Instruktor</label>
@@ -36,11 +37,12 @@
           </select></span>
           <button class="btn btn-primary" type="submit">Wyszukaj</button>
         </form>
+        {% endif %}
         </div>
         <div class="table-responsive">
           <table class="table mb-0 table-borderless table-striped small">
             <thead>
-              <tr class="text-secondary"><th class="pt-4 pb-3 px-6">Data startu kursu</th><th class="pt-4 pb-3 px-6">Typ kursu</th><th class="pt-4 pb-3 px-6">Instruktor</th><th class="pt-4 pb-3 px-6">Akcje</th></tr>
+              <tr class="text-secondary"><th class="pt-4 pb-3 px-6">Data startu kursu</th><th class="pt-4 pb-3 px-6">Typ kursu</th><th class="pt-4 pb-3 px-6">Instruktor</th>{% if user.permissions_type != "I" %}<th class="pt-4 pb-3 px-6">Akcje</th>{% endif %}</tr>
             </thead>
             <tbody>
             {% for theory in theories %}
@@ -55,6 +57,7 @@
                 <td class="py-5 px-6">
                   {{theory.instructor}}
                 </td>
+                {% if user.permissions_type != "I" %}
                 <td class="py-5 px-6">
                   <a class="btn p-0 me-2" href="/theory/{{theory.id}}/edit">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
@@ -68,6 +71,7 @@
                       </svg>
                   </a>
                 </td>
+                {% endif %}
               </tr>
               {% endfor %}
             </tbody>

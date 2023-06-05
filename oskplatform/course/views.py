@@ -1,6 +1,5 @@
 from django.http import HttpResponse
 from django.template import loader
-from django.contrib.auth.decorators import login_required
 from users.models import CustomUser, Student, Instructor, Qualification, Employee
 from course.models import PracticalLesson, Course, Category, Vehicle, TheoryCourse
 from django.utils import timezone
@@ -21,6 +20,7 @@ from course.forms import (
     InstructorForm,
     EmployeeForm,
 )
+from datetime import datetime, date
 from django.contrib import messages
 from django.shortcuts import redirect, get_object_or_404
 from course.utils import (
@@ -649,9 +649,14 @@ class CreateTheoryView(View):
 class TheoriesView(View):
     template = loader.get_template("theories.html")
 
-    @method_decorator(requires_permissions(permission_type=["E", "A"]))
+    @method_decorator(requires_permissions(permission_type=["E", "A", "I"]))
     def get(self, request):
-        if request.GET.get("instructor") != None:
+        if request.user.permissions_type == "I":
+            theories = TheoryCourse.objects.filter(
+                instructor=request.user.instructor,
+                start_date__gte=date.today().replace(month=date.today().month - 1),
+            ).order_by("start_date")
+        elif request.GET.get("instructor") != None:
             theories = self._search_results(request)
         else:
             theories = TheoryCourse.objects.all()
@@ -1197,7 +1202,7 @@ class RegisterEmployeeView(View):
             username = f"{employee.surname.lower()[:3]}{employee.name.lower()[:3]}{next_user_id}"
             password = generate_password()
             print(request.POST.get("is_admin"))
-            if request.POST.get("is_admin") == 'on':
+            if request.POST.get("is_admin") == "on":
                 permissions_type = "A"
             else:
                 permissions_type = "E"
