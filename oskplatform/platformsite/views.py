@@ -2,9 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
 from course.models import Category, Vehicle, TheoryCourse
-from course.utils import get_course_dates
 from users.models import Instructor
-from users.utils import get_inctructor_qualifications
+from users.utils import get_instructor_qualifications
 from django.views import View
 import datetime
 
@@ -22,7 +21,7 @@ class CategoryView(View):
     def get(self, request, category_id):
         category = get_object_or_404(Category, pk=category_id)
         if category.is_available == False:
-            return render(request, "404.html")
+            return HttpResponse(status=404)
         template = loader.get_template("category_home.html")
         context = {
             "category": category,
@@ -47,7 +46,7 @@ class InstructorsView(View):
         instructors_qualifications = []
         for instructor in instructors:
             instructors_qualifications.append(
-                (instructor, get_inctructor_qualifications(instructor["id"]))
+                (instructor, get_instructor_qualifications(instructor["id"]))
             )
         context = {"instructors": instructors_qualifications}
         return HttpResponse(template.render(context, request))

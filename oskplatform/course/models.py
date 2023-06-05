@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import date, datetime
+from datetime import date, datetime, time
 from django.db.models.constraints import CheckConstraint
 from django.db.models import Q, F
 
@@ -50,9 +50,18 @@ class Category(models.Model):
             CheckConstraint(
                 check=Q(discount_price__gte=0), name="discount_price_gte_0"
             ),
-            CheckConstraint(check=Q(price__gt=F("discount_price")), name="price_gte_discount_price"),
-            CheckConstraint(check=((Q(is_discount=True) & Q(discount_price__isnull=False))|Q(is_discount=False)), name="is_discount_true_discount_price_not_null"),
+            CheckConstraint(
+                check=Q(price__gt=F("discount_price")), name="price_gte_discount_price"
+            ),
+            CheckConstraint(
+                check=(
+                    (Q(is_discount=True) & Q(discount_price__isnull=False))
+                    | Q(is_discount=False)
+                ),
+                name="is_discount_true_discount_price_not_null",
+            ),
         ]
+
     symbol = models.CharField(max_length=4, primary_key=True, unique=True, null=False)
     description = models.TextField(null=False)
     required_practical_hours = models.IntegerField(null=False, default=0)
@@ -167,13 +176,14 @@ class PracticalLesson(models.Model):
 
     @property
     def get_end_time(self):
-        hour = (self.start_time.hour + self.num_of_hours) % 24
+        start_hour = time.fromisoformat(str(self.start_time))
+        hour = (start_hour.hour + self.num_of_hours) % 24
         return datetime(
             year=self.date.year,
             month=self.date.month,
             day=self.date.day,
             hour=hour,
-            minute=self.start_time.minute,
+            minute=start_hour.minute,
         )
 
     @property
