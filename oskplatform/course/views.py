@@ -422,7 +422,7 @@ class CreateCourseView(View):
         return HttpResponse(self.template.render(context, request))
 
     @method_decorator(requires_permissions(permission_type=["E", "A"]))
-    def post(self, request, student_id):
+    def post(self, request, student_id=None):
         form = CreateCourseForm(request.POST)
         if form.is_valid() and check_instructor_qualifications(
             form.cleaned_data["instructor"], form.cleaned_data["category"]
@@ -442,7 +442,7 @@ class CreateCourseView(View):
             messages.success(request, "Dodano nowy kurs")
             return redirect("/courses")
         else:
-            messages.error(request, "Wprowadzono niepoprawne dane")
+            messages.error(request, f"Wprowadzono niepoprawne dane: {form.errors}")
             if student_id:
                 return redirect(f"/courses/create/{student_id}")
             else:
