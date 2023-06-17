@@ -137,7 +137,7 @@ class PracticalLessonModelTest(TestCase):
 
     def test_str_method(self):
         self.assertEqual(
-            str(self.practical_lesson), f"{self.practical_lesson.id} - 123456789 2023-06-06 (10:00)"
+            str(self.practical_lesson), f"{self.practical_lesson.id} - 123456789 {date.today().replace(day=date.today().day + 1)} (10:00)"
         )
 
     def test_is_alreadu_happened(self):
@@ -150,7 +150,7 @@ class PracticalLessonModelTest(TestCase):
         self.assertTrue(self.practical_lesson.is_paid)
 
     def test_get_end_time(self):
-        self.assertEqual(self.practical_lesson.get_end_time, datetime(2023, 6, 6, 11, 0) )
+        self.assertEqual(self.practical_lesson.get_end_time, datetime(datetime.today().year, datetime.today().month, datetime.today().day+1, 11, 0) )
 
     def test_is_number_of_km_filled(self):
         self.assertFalse(self.practical_lesson.is_number_of_km_filled)
