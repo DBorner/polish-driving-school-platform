@@ -19,10 +19,6 @@ class Vehicle(models.Model):
     class Meta:
         constraints = [
             CheckConstraint(check=Q(year_of_production__gte=1900), name="year_gte_1900"),
-            CheckConstraint(
-                check=Q(year_of_production__lte=date.today().year),
-                name="year_lte_current_year",
-            )
         ]
     
     id = models.AutoField(primary_key=True)

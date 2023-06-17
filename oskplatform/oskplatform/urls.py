@@ -14,7 +14,6 @@ urlpatterns = [
     path('home/theories/', platform_views.TheorysView.as_view()),
     path('login/', user_views.LoginView.as_view()),
     path('logout/', user_views.logout_view),
-    path('panel/', course_views.PanelView.as_view()),
     path('students/', course_views.StudentsView.as_view(), name='students'),
     path('students/<int:student_id>/edit', course_views.EditStudentView.as_view()),
     path('students/<int:student_id>/create_account', course_views.create_account_for_student_view),
