@@ -294,7 +294,8 @@ class EditPracticalLessonView(View):
             lesson.num_of_km = form.cleaned_data["num_of_km"]
             lesson.vehicle = form.cleaned_data["vehicle"]
             if request.user.permissions_type != "I":
-                lesson.instructor = form.cleaned_data["instructor"]
+                if request.POST.get("instructor") != "" and Instructor.objects.filter(pk=request.POST.get("instructor")).exists():
+                    lesson.instructor = Instructor.objects.get(pk=request.POST.get("instructor"))
             lesson.save()
             return redirect(f"/practical/{practical_id}")
         else:

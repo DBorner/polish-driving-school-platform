@@ -282,3 +282,172 @@ class DeletePracticalLessonTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertEqual(PracticalLesson.objects.filter(pk=1).exists(), True)
 
+class EditPracticalLessonViewTest(TestCase):
+    def setUp(self):
+        self.student = baker.make(Student)
+        self.category = baker.make(Category, required_practical_hours=10)
+        self.course = baker.make(Course, category=self.category, student=self.student)
+        self.practical_lesson = baker.make(PracticalLesson, course=self.course, num_of_hours=10)
+        self.url = "/practical/1/edit/"
+        self.user = baker.make(CustomUser, student=self.student, permissions_type='E')
+        self.client.force_login(self.user)
+        self.instructor = baker.make(Instructor)
+        
+        
+    def test_edit_practical_lesson(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'practical_edit.html')
+        
+    def test_edit_with_wrong_permissions(self):
+        self.user.permissions_type = 'S'
+        self.user.save()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed(response, 'practical_edit.html')
+    
+    def test_instructor_that_not_his_lesson(self):
+        self.user.permissions_type = 'I'
+        self.user.save()
+        self.practical_lesson.instructor = baker.make(Instructor)
+        self.practical_lesson.save()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed(response, 'practical_edit.html')
+    
+    def test_post_edit_practical_lesson(self):
+        data = {
+            'date': date.today(),
+            'num_of_hours': 5,
+            'start_time': datetime.now().time(),
+            'instructor': self.instructor.id,
+            'cost': 100,
+            'num_of_km': 5,
+            
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(PracticalLesson.objects.get(pk=1).num_of_hours, 5)
+    
+    def test_post_wrong_data(self):
+        data = {
+            'date': date.today(),
+            'num_of_hours': 5,            
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(PracticalLesson.objects.get(pk=1).num_of_hours, 10)
+        
+class CreatePracticalLessonView(TestCase):
+    def setUp(self):
+        self.student = baker.make(Student)
+        self.category = baker.make(Category, required_practical_hours=10)
+        self.course = baker.make(Course, category=self.category, student=self.student)
+        self.url = "/practical/create/"
+        self.instructor = baker.make(Instructor)
+        self.qualification = baker.make(Qualification, instructor=self.instructor, category=self.category)
+        self.user = baker.make(CustomUser, instructor=self.instructor, permissions_type='I')
+        self.client.force_login(self.user)
+        
+        
+    def test_create_practical_lesson(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'practical_create.html')
+        
+    def test_create_with_wrong_permissions(self):
+        self.user.permissions_type = 'S'
+        self.user.save()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed(response, 'practical_create.html')
+    
+    def test_post_create_practical_lesson(self):
+        data = {
+            "course": self.course.id,
+            "date": date.today(),
+            "start_time": datetime.now().time(),
+            "num_of_hours": 5,
+            "num_of_km": 5,
+            "cost": 100,    
+            
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(PracticalLesson.objects.filter(course=self.course).count(), 1)
+    
+    def test_post_wrong_data(self):
+        data = {
+            "course": self.course.id,
+            "date": date.today(),
+            "start_time": datetime.now().time(),       
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(PracticalLesson.objects.filter(course=self.course).count(), 0)
+
+class CreateCourseView(TestCase):
+    def setUp(self):
+        self.student = baker.make(Student)
+        self.instructor = baker.make(Instructor)
+        self.category = baker.make(Category, required_practical_hours=10)
+        self.url = "/courses/create/"
+        self.user = baker.make(CustomUser, student=self.student, permissions_type='E')
+        self.client.force_login(self.user)
+        
+        
+    def test_create_course(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'course_create.html')
+        
+    def test_create_with_wrong_permissions(self):
+        self.user.permissions_type = 'I'
+        self.user.save()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed(response, 'course_create.html')
+    
+    def test_post_create_course(self):
+        data = {
+            'pkk_number': '12345123451234512345',
+            'cost': 100.0,
+            'category': self.category.symbol,
+            'student': self.student.id,
+            'instructor': "",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Course.objects.filter(student=self.student).count(), 1)
+        
+    def test_post_wrong_pkk_number(self):
+        data = {
+            'pkk_number': '123451234512345123',
+            'cost': 100.0,
+            'category': self.category.symbol,
+            'student': self.student.id,
+            'instructor': "",
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Course.objects.filter(student=self.student).count(), 0)
+        
+    def test_post_wrong_data(self):
+        data = {
+            'cost': 100,
+            'category': self.category.symbol,
+        }
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(Course.objects.filter(student=self.student).count(), 0)
+
+class EditCourseView(TestCase):
+    def setUp(self):
+        self.student = baker.make(Student)
+        self.instructor = baker.make(Instructor)
+        self.category = baker.make(Category, required_practical_hours=10)
+        self.course = baker.make(Course, category=self.category, student=self.student)
+        self.url = "/courses/edit/1/"
+        self.user = baker.make(CustomUser, student=self.student, permissions_type='E')
+        self.client.force_login(self.user)
+    
