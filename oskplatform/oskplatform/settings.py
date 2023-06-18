@@ -13,8 +13,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from pathlib import Path
 import os
 from django.contrib.messages import constants as messages
-
+from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
+load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -22,12 +23,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-k%x%txw6zzy8ia+494@gy#$#87ik!yohcynt7brd05)^-hl5-2'
+SECRET_KEY = os.getenv("DJANGO_SECRET")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv("HOSTS").split(' ')
 
 
 # Application definition
