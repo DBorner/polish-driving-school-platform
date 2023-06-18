@@ -35,15 +35,6 @@ from django.views import View
 from django.utils.decorators import method_decorator
 from datetime import datetime, date
 
-
-class PanelView(View):
-    template_name = "panel.html"
-
-    @requires_permissions(permission_type=["E", "A"])
-    def get(self, request):
-        return HttpResponse(request, self.template_name)
-
-
 class ProfileSettingsView(View):
     template = loader.get_template("profile_settings.html")
 
@@ -303,7 +294,8 @@ class EditPracticalLessonView(View):
             lesson.num_of_km = form.cleaned_data["num_of_km"]
             lesson.vehicle = form.cleaned_data["vehicle"]
             if request.user.permissions_type != "I":
-                lesson.instructor = form.cleaned_data["instructor"]
+                if request.POST.get("instructor") != "" and Instructor.objects.filter(pk=request.POST.get("instructor")).exists():
+                    lesson.instructor = Instructor.objects.get(pk=request.POST.get("instructor"))
             lesson.save()
             return redirect(f"/practical/{practical_id}")
         else:
@@ -635,7 +627,7 @@ class EditStudentView(View):
             student.email = request.POST.get("email")
             student.save()
             messages.success(request, "Zapisano zmiany")
-            return redirect(f"/students")
+            return redirect("/students")
         messages.error(request, "Wprowadzono niepoprawne dane")
         return redirect(f"/students/{student_id}/edit")
 
