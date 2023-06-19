@@ -1016,7 +1016,7 @@ class RegisterInstructorView(View):
             user = CustomUser.objects.create_user(
                 username=username,
                 password=password,
-                permissions_type="S",
+                permissions_type="I",
                 instructor=instructor,
             )
             user.save()
