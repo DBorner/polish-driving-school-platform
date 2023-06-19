@@ -8,7 +8,7 @@ class Student(models.Model):
     class Meta:
         constraints = [
             models.CheckConstraint(
-                check=Q(birth_date__lte=date.today()), name="birth_date_lte_today"
+                check=Q(birth_date__lte=date.today()), name="student_birth_date_lte_today"
             )
         ]
     id = models.AutoField(primary_key=True)
@@ -30,10 +30,10 @@ class Instructor(models.Model):
     class Meta:
         constraints = [
             models.CheckConstraint(
-                check=Q(birth_date__lte=date.today()), name="birth_date_lte_today"
+                check=Q(birth_date__lte=date.today()), name="instructor_birth_date_lte_today"
             ),
             models.CheckConstraint(
-                check=Q(date_of_employment__lte=date.today()), name="date_of_employment_gte_birth_date"
+                check=Q(date_of_employment__lte=date.today()), name="instructor_date_of_employment_gte_birth_date"
             )
         ]
     id = models.AutoField(primary_key=True)
@@ -57,10 +57,10 @@ class Employee(models.Model):
     class Meta:
         constraints = [
             models.CheckConstraint(
-                check=Q(birth_date__lte=date.today()), name="birth_date_lte_today"
+                check=Q(birth_date__lte=date.today()), name="employee_birth_date_lte_today"
             ),
             models.CheckConstraint(
-                check=Q(date_of_employment__lte=date.today()), name="date_of_employment_gte_birth_date"
+                check=Q(date_of_employment__lte=date.today()), name="employee_date_of_employment_gte_birth_date"
             )
         ]
     id = models.AutoField(primary_key=True)

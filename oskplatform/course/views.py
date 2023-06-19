@@ -1167,6 +1167,9 @@ class CreateQualificationView(View):
                 messages.error(request, "Instruktor posiada już taką kwalifikację")
                 return redirect(f"/qualification/{instructor_id}/add/")
             qualification.instructor = instructor
+            if qualification.date_of_achievement >= date.today():
+                messages.error(request, "Podano błędną datę")
+                return redirect(f"/qualification/{instructor_id}/add/")
             qualification.save()
             messages.success(request, "Dodano kwalifikację")
             return redirect(f"/qualifications/{instructor_id}/")
