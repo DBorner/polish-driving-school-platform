@@ -11,7 +11,7 @@ from course.models import Category, Course, PracticalLesson
 from users.models import Instructor, Student, Qualification
 from model_bakery import baker
 
-def bake_data(how_many=10):
+def generate_students(how_many=10, finished_courses=True):
     fake = Faker(['pl_PL']) 
     print("Creating fake data...")
     for k in trange(0, how_many, desc ="Progress: "):
@@ -37,7 +37,11 @@ def bake_data(how_many=10):
                             instructor=instructor
             )
             num_of_hours = 0
-            while num_of_hours < category.required_practical_hours:
+            if finished_courses:
+                practical_hours = category.required_practical_hours
+            else:
+                practical_hours = random.randint(0, category.required_practical_hours)
+            while num_of_hours < practical_hours:
                 practical_lesson = baker.make(PracticalLesson,
                                         date=fake.date_between(start_date='-3y', end_date='-1m'),
                                         start_time=fake.time(),
@@ -48,7 +52,8 @@ def bake_data(how_many=10):
                                         course=course
                 )
                 num_of_hours += practical_lesson.num_of_hours
-            course.course_status = 'Z'
+            if finished_courses:
+                course.course_status = 'Z'
             course.save()
     print("Done!")
 
@@ -59,18 +64,25 @@ def pick_instructor(category):
     return qualification.instructor
 
 def start_script():
-    input("This script will create fake data. Press ENTER to continue...")
-    input("It will only work if you have already created instructors, categories and qualifications. Press ENTER to continue...")
-    x = input("Are you sure you want to continue? (y/n): ")
-    if x == 'y':
-        try:
-            how_many = int(input("How many students do you want to create? (default: 10): "))
-        except ValueError:
-            print("Wrong input. Default value will be used.")
-            bake_data()
-        if how_many <= 0:
-            bake_data()
-        bake_data(how_many)
+    try:
+        input("This script will create fake data. Press ENTER to continue...")
+        input("It will only work if you have already created instructors, categories and qualifications. Press ENTER to continue...")
+        x = input("Are you sure you want to continue? (y/n): ")
+        if x == 'y':
+            if input("Do you want to create finished courses? (y/n): ") == 'y':
+                finished_courses = True
+            else:
+                finished_courses = False
+            try:
+                how_many = int(input("How many students do you want to create? (default: 10): "))
+            except ValueError:
+                print("Wrong input. Default value will be used.")
+                generate_students(finished_courses=finished_courses)
+            if how_many <= 0:
+                generate_students(finished_courses=finished_courses)
+            generate_students(how_many, finished_courses=finished_courses)
+    except KeyboardInterrupt:
+        print("\nAborted.")
         
 if __name__ == "__main__":
     start_script()

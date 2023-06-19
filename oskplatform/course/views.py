@@ -127,7 +127,7 @@ class CoursesView(View):
                 user_courses = Course.objects.filter(student_id=student_id)
             else:
                 user_courses = Course.objects.all()
-            user_courses = user_courses.order_by("course_status")
+            user_courses = user_courses.order_by("course_status", "-start_date")
         data = []
         for course in user_courses:
             data.append(
@@ -483,7 +483,7 @@ class StudentsView(View):
         if request.GET.get("q") != None:
             students = self._search_results(request)
         else:
-            students = Student.objects.all()
+            students = Student.objects.all().order_by("-id")
         context = {"students": students}
         return HttpResponse(self.template.render(context, request))
 
