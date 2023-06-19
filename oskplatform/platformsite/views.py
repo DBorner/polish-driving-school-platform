@@ -69,3 +69,7 @@ class TheorysView(View):
             data.append((theory, instructors.get(pk=theory["instructor_id"])))
         context = {"theories": data}
         return HttpResponse(template.render(context, request))
+
+
+def page_not_found_view(request, exception):
+    return render(request, '404.html', status=404)

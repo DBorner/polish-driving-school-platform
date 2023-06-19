@@ -69,3 +69,5 @@ urlpatterns = [
     path('employees/<int:employee_id>/change_permissions', course_views.change_employee_permissions_type_view, name='change_employee_permissions_type'),
     path('', platform_views.HomeView.as_view(), name='home'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler404 = "platformsite.views.page_not_found_view"   
