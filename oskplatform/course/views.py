@@ -169,7 +169,7 @@ class CourseDetailView(View):
             return redirect("/courses")
 
         lessons = PracticalLesson.objects.filter(course=course)
-        lessons = lessons.order_by("date", "start_time")
+        lessons = lessons.order_by("-date", "start_time")
         context = {"course": course, "lessons": lessons}
         return HttpResponse(self.template.render(context, request))
 
