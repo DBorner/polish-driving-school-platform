@@ -13,8 +13,8 @@
 
           <div class="mb-5">
 
-          <div class="d-flex mb-4 align-items-center justify-content-between">
-            <div class="d-flex align-items-center">
+          <div class="row row-2 mb-4 align-items-center justify-content-between">
+            <div class="d-flex align-items-center col-sm-4 col-6">
               <span class="me-2 d-inline-block">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-badge" viewBox="0 0 16 16">
                     <path d="M6.5 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1h-3zM11 8a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"/>
@@ -23,15 +23,15 @@
               </span>
               <span class="small text-secondary">Instruktor</span>
             </div>
-            <span class="small"><select name="instructor">
+            <span class="small col-sm-8 col-6"><select class='form-select rounded-0' name="instructor">
                 {% for instructor in instructors %}
                 <option value={{instructor.id}}>{{instructor.full_name}} - {{instructor.id}}</option>
                 {% endfor %}
               </select></span>
           </div>
 
-          <div class="d-flex mb-4 align-items-center justify-content-between">
-            <div class="d-flex align-items-center">
+          <div class="row row-2 mb-4 align-items-center justify-content-between">
+            <div class="d-flex align-items-center col-sm-4 col-6">
               <span class="me-2 d-inline-block">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="" viewbox="0 0 16 16">
                     <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"></path>
@@ -40,7 +40,7 @@
               </span>
               <span class="small text-secondary">Status</span>
             </div>
-            <span class="small"><select name="status">
+            <span class="small col-sm-8 col-6"><select class='form-select rounded-0' name="status">
                 <option value={{course.course_status}}>{{course.get_status}}</option>
                 <option value='R'>Rozpoczęty</option>
                 <option value='Z'>Zakończony</option>

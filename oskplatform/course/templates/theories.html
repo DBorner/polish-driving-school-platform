@@ -14,7 +14,7 @@
         <form action={% url 'theories' %} method='get'>
             <span class="small">
                 <label for="instructor" class="small">Instruktor</label>
-                <select id='instructor' name="instructor">
+                <select class='form-select rounded-0 my-2' id='instructor' name="instructor">
                 <option value=""></option>
                 {% for instructor in instructors %}
                 <option value={{instructor.id}}>{{instructor}}</option>
@@ -23,14 +23,14 @@
             </span>
           <span class="small">
             <label for="status" class="small">Status kursu</label>
-            <select name="status" id="status">
+            <select class='form-select rounded-0 my-2' name="status" id="status">
             <option value="all">Wszystkie</option>
             <option value="coming">Zaplanowane</option>
             <option value="done">Odbyte</option>
           </select></span>
           <span class="small">
             <label for="type" class="small">Typ kursu</label>
-            <select name="type" id='type'>
+            <select class='form-select rounded-0 my-2' name="type" id='type'>
             <option value="all">Wszystkie</option>
             <option value="T">Tygodniowe</option>
             <option value="W">Weekendowe</option>

@@ -12,7 +12,7 @@
         <div class="pt-4 pb-5 px-6 border-bottom border-secondary-light">
         <form action={% url 'instructors' %} method='get'>
           <span class="small"><input class="form-control" type="text" name="q" placeholder="Wyszukaj..."></span>
-          <span class="small"><select name="status">
+          <span class="small"><select class='form-select rounded-0 my-2' name="status">
             <option value="all">Wszyscy</option>
             <option value="active">Aktywny</option>
             <option value="inactive">Nieaktywny</option>
