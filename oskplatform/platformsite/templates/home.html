@@ -29,7 +29,7 @@
                             {% else %}
                             <h2 class="post-title">Kategoria {{ x.symbol }} - {{ x.price }} zł</h2>
                             {% endif %}
-                            <h3 class="post-subtitle">{{ x.description }}</h3>
+                            <h3 class="post-subtitle">{{ x.description|truncatechars:200 }}</h3>
                         </a>
                     </div>
                     <!-- Divider-->

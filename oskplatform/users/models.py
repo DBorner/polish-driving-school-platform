@@ -5,6 +5,12 @@ from django.db.models import Q
 
 
 class Student(models.Model):
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=Q(birth_date__lte=date.today()), name="student_birth_date_lte_today"
+            )
+        ]
     id = models.AutoField(primary_key=True)
     surname = models.CharField(max_length=50, null=False)
     name = models.CharField(max_length=50, null=False)
@@ -21,13 +27,22 @@ class Student(models.Model):
 
 
 class Instructor(models.Model):
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=Q(birth_date__lte=date.today()), name="instructor_birth_date_lte_today"
+            ),
+            models.CheckConstraint(
+                check=Q(date_of_employment__lte=date.today()), name="instructor_date_of_employment_gte_birth_date"
+            )
+        ]
     id = models.AutoField(primary_key=True)
     surname = models.CharField(max_length=50, null=False)
     name = models.CharField(max_length=50, null=False)
     birth_date = models.DateField(null=False)
     date_of_employment = models.DateField(null=True, blank=True)
     phone_number = models.CharField(max_length=20, null=False)
-    instructor_id = models.CharField(max_length=15, null=False)
+    instructor_id = models.CharField(max_length=15, null=False, unique=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -39,6 +54,15 @@ class Instructor(models.Model):
 
 
 class Employee(models.Model):
+    class Meta:
+        constraints = [
+            models.CheckConstraint(
+                check=Q(birth_date__lte=date.today()), name="employee_birth_date_lte_today"
+            ),
+            models.CheckConstraint(
+                check=Q(date_of_employment__lte=date.today()), name="employee_date_of_employment_gte_birth_date"
+            )
+        ]
     id = models.AutoField(primary_key=True)
     surname = models.CharField(max_length=50, null=False)
     name = models.CharField(max_length=50, null=False)

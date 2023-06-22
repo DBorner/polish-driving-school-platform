@@ -74,7 +74,7 @@ class InstructorsView(TestCase):
             name="John",
             birth_date=date(2000, 1, 1),
             phone_number="123456789",
-            instructor_id="123456789",
+            instructor_id="12345678999",
             is_active=False,
         )
 

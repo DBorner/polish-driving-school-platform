@@ -23,7 +23,7 @@
                   </span>
                   <span class="small text-secondary">Typ kursu</span>
                 </div>
-                <span class="small"><select name="type">
+                <span class="small"><select class='form-select rounded-0' name="type">
                     <option value={{theory.type}}>{{theory.get_type}}</option>
                     <option value='T'>Tygodniowy</option>
                     <option value='W'>Weekendowy</option>
@@ -54,7 +54,7 @@
               </span>
               <span class="small text-secondary">Instruktor</span>
             </div>
-            <span class="small"><select name="instructor">
+            <span class="small"><select class='form-select rounded-0' name="instructor">
                 <option value={{theory.instructor.id}}>{{theory.instructor.full_name}} - {{theory.instructor.id}}</option>
                 {% for instructor in instructors %}
                 <option value={{instructor.id}}>{{instructor.full_name}} - {{instructor.id}}</option>

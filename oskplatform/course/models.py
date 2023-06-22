@@ -22,7 +22,7 @@ class Vehicle(models.Model):
         ]
     
     id = models.AutoField(primary_key=True)
-    registration_number = models.CharField(max_length=15, null=False)
+    registration_number = models.CharField(max_length=15, null=False, unique=True)
     type = models.CharField(
         max_length=2, choices=vehicle_type_choices, default="SO", null=False
     )

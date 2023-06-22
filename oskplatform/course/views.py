@@ -127,7 +127,7 @@ class CoursesView(View):
                 user_courses = Course.objects.filter(student_id=student_id)
             else:
                 user_courses = Course.objects.all()
-            user_courses = user_courses.order_by("course_status")
+            user_courses = user_courses.order_by("course_status", "-start_date")
         data = []
         for course in user_courses:
             data.append(
@@ -169,7 +169,7 @@ class CourseDetailView(View):
             return redirect("/courses")
 
         lessons = PracticalLesson.objects.filter(course=course)
-        lessons = lessons.order_by("date", "start_time")
+        lessons = lessons.order_by("-date", "start_time")
         context = {"course": course, "lessons": lessons}
         return HttpResponse(self.template.render(context, request))
 
@@ -466,12 +466,12 @@ class EditCourseView(View):
         ):
             course = Course.objects.get(pk=course_id)
             course.instructor = form.cleaned_data["instructor"]
-            course.course_status = form.cleaned_data["status"]
+            course.course_status = form.cleaned_data["course_status"]
             course.save()
             messages.success(request, "Zmieniono dane kursu")
             return redirect(f"/courses/{course_id}")
         else:
-            messages.error(request, "Wprowadzono niepoprawne dane")
+            messages.error(request, f"Wprowadzono niepoprawne dane {form.errors}")
             return redirect(f"/courses/{course_id}/edit")
 
 
@@ -483,7 +483,7 @@ class StudentsView(View):
         if request.GET.get("q") != None:
             students = self._search_results(request)
         else:
-            students = Student.objects.all()
+            students = Student.objects.all().order_by("-id")
         context = {"students": students}
         return HttpResponse(self.template.render(context, request))
 
@@ -1016,7 +1016,7 @@ class RegisterInstructorView(View):
             user = CustomUser.objects.create_user(
                 username=username,
                 password=password,
-                permissions_type="S",
+                permissions_type="I",
                 instructor=instructor,
             )
             user.save()
@@ -1167,6 +1167,9 @@ class CreateQualificationView(View):
                 messages.error(request, "Instruktor posiada już taką kwalifikację")
                 return redirect(f"/qualification/{instructor_id}/add/")
             qualification.instructor = instructor
+            if qualification.date_of_achievement >= date.today():
+                messages.error(request, "Podano błędną datę")
+                return redirect(f"/qualification/{instructor_id}/add/")
             qualification.save()
             messages.success(request, "Dodano kwalifikację")
             return redirect(f"/qualifications/{instructor_id}/")

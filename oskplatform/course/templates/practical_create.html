@@ -23,7 +23,7 @@
                   </span>
                   <span class="small text-secondary">Kurs</span>
                 </div>
-                <span class="small"><select name="course">
+                <span class="small"><select class='form-select rounded-0' name="course">
                     {% for course in courses %}
                     <option value={{course.id}}>{{course.student.full_name}} - {{course.category}}</option>
                     {% endfor %}
@@ -95,7 +95,7 @@
               </span>
               <span class="small text-secondary">Pojazd</span>
             </div>
-            <span class="small"><select name="vehicle">
+            <span class="small"><select class='form-select rounded-0' name="vehicle">
                 {% for vehicle in vehicles %}
                 <option value={{vehicle.id}}>{{vehicle.brand}} {{vehicle.model}} {{vehicle.year_of_production}} - {{vehicle.registration_number}}</option>
                 {% endfor %}
