@@ -466,12 +466,12 @@ class EditCourseView(View):
         ):
             course = Course.objects.get(pk=course_id)
             course.instructor = form.cleaned_data["instructor"]
-            course.course_status = form.cleaned_data["status"]
+            course.course_status = form.cleaned_data["course_status"]
             course.save()
             messages.success(request, "Zmieniono dane kursu")
             return redirect(f"/courses/{course_id}")
         else:
-            messages.error(request, "Wprowadzono niepoprawne dane")
+            messages.error(request, f"Wprowadzono niepoprawne dane {form.errors}")
             return redirect(f"/courses/{course_id}/edit")
 
 
