@@ -27,15 +27,6 @@ class Student(models.Model):
 
 
 class Instructor(models.Model):
-    class Meta:
-        constraints = [
-            models.CheckConstraint(
-                check=Q(birth_date__lte=date.today()), name="instructor_birth_date_lte_today"
-            ),
-            models.CheckConstraint(
-                check=Q(date_of_employment__lte=date.today()), name="instructor_date_of_employment_gte_birth_date"
-            )
-        ]
     id = models.AutoField(primary_key=True)
     surname = models.CharField(max_length=50, null=False)
     name = models.CharField(max_length=50, null=False)

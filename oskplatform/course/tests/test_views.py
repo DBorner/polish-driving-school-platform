@@ -52,7 +52,7 @@ class ProfileSettingsViewTest(TestCase):
 class UpcomingLessonsViewTest(TestCase):
     def setUp(self):
         self.url = reverse('upcoming_lessons')
-        self.student = baker.make(Student)
+        self.student = baker.make(Student, birth_date=date(2000, 1, 1))
         self.category = baker.make(Category, required_practical_hours=10)
         self.course = baker.make(Course, category=self.category, student=self.student)
         self.practical_lesson = baker.make(PracticalLesson, course=self.course, num_of_hours=10)
@@ -86,7 +86,7 @@ class UpcomingLessonsViewTest(TestCase):
 class CoursesViewTest(TestCase):
     def setUp(self):
         self.url = reverse('courses')
-        self.student = baker.make(Student)
+        self.student = baker.make(Student, birth_date=date(2000, 1, 1))
         self.category = baker.make(Category, required_practical_hours=10)
         self.course = baker.make(Course, category=self.category, student=self.student)
         self.practical_lesson = baker.make(PracticalLesson, course=self.course, num_of_hours=10)
@@ -124,7 +124,7 @@ class CoursesViewTest(TestCase):
 
 class CourseDetailViewTest(TestCase):
     def setUp(self):
-        self.student = baker.make(Student)
+        self.student = baker.make(Student, birth_date=date(2000, 1, 1))
         self.category = baker.make(Category, required_practical_hours=10)
         self.course = baker.make(Course, category=self.category, student=self.student)
         self.practical_lesson = baker.make(PracticalLesson, course=self.course, num_of_hours=10)
@@ -153,7 +153,7 @@ class CourseDetailViewTest(TestCase):
         
     def test_another_student_course_detail_view_get(self):
         self.user.permissions_type = 'S'
-        self.course.student = baker.make(Student)
+        self.course.student = baker.make(Student, birth_date=date(2000, 1, 1))
         self.course.save()
         self.user.save()    
         response = self.client.get(self.url)
@@ -167,7 +167,7 @@ class CourseDetailViewTest(TestCase):
         
 class PracticalDetailViewTest(TestCase):
     def setUp(self):
-        self.student = baker.make(Student)
+        self.student = baker.make(Student, birth_date=date(2000, 1, 1))
         self.category = baker.make(Category, required_practical_hours=10)
         self.course = baker.make(Course, category=self.category, student=self.student)
         self.practical_lesson = baker.make(PracticalLesson, course=self.course, num_of_hours=10)
@@ -196,7 +196,7 @@ class PracticalDetailViewTest(TestCase):
         
     def test_another_student_practical_detail_view_get(self):
         self.user.permissions_type = 'S'
-        self.course.student = baker.make(Student)
+        self.course.student = baker.make(Student, birth_date=date(2000, 1, 1))
         self.course.save()
         self.user.save()    
         response = self.client.get(self.url)
@@ -210,7 +210,7 @@ class PracticalDetailViewTest(TestCase):
         
 class ChangePracticalLessonStatusTest(TestCase):
     def setUp(self):
-        self.student = baker.make(Student)
+        self.student = baker.make(Student, birth_date=date(2000, 1, 1))
         self.category = baker.make(Category, required_practical_hours=10)
         self.course = baker.make(Course, category=self.category, student=self.student)
         self.practical_lesson = baker.make(PracticalLesson, course=self.course, num_of_hours=10)
@@ -237,7 +237,7 @@ class ChangePracticalLessonStatusTest(TestCase):
     def test_instructor_that_not_his_lesson(self):
         self.user.permissions_type = 'I'
         self.user.save()
-        self.course.instructor = baker.make(Instructor)
+        self.course.instructor = baker.make(Instructor, birth_date=date(2000, 1, 1))
         self.course.save()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)
@@ -245,7 +245,7 @@ class ChangePracticalLessonStatusTest(TestCase):
         
 class DeletePracticalLessonTest(TestCase):
     def setUp(self):
-        self.student = baker.make(Student)
+        self.student = baker.make(Student, birth_date=date(2000, 1, 1))
         self.category = baker.make(Category, required_practical_hours=10)
         self.course = baker.make(Course, category=self.category, student=self.student)
         self.practical_lesson = baker.make(PracticalLesson, course=self.course, num_of_hours=10)
@@ -269,7 +269,7 @@ class DeletePracticalLessonTest(TestCase):
     def test_instructor_that_not_his_lesson(self):
         self.user.permissions_type = 'I'
         self.user.save()
-        self.course.instructor = baker.make(Instructor)
+        self.course.instructor = baker.make(Instructor, birth_date=date(2000, 1, 1))
         self.course.save()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)
@@ -284,14 +284,14 @@ class DeletePracticalLessonTest(TestCase):
 
 class EditPracticalLessonViewTest(TestCase):
     def setUp(self):
-        self.student = baker.make(Student)
+        self.student = baker.make(Student, birth_date=date(2000, 1, 1))
         self.category = baker.make(Category, required_practical_hours=10)
         self.course = baker.make(Course, category=self.category, student=self.student)
         self.practical_lesson = baker.make(PracticalLesson, course=self.course, num_of_hours=10)
         self.url = "/practical/1/edit/"
         self.user = baker.make(CustomUser, student=self.student, permissions_type='E')
         self.client.force_login(self.user)
-        self.instructor = baker.make(Instructor)
+        self.instructor = baker.make(Instructor, birth_date=date(2000, 1, 1))
         
         
     def test_edit_practical_lesson(self):
@@ -309,7 +309,7 @@ class EditPracticalLessonViewTest(TestCase):
     def test_instructor_that_not_his_lesson(self):
         self.user.permissions_type = 'I'
         self.user.save()
-        self.practical_lesson.instructor = baker.make(Instructor)
+        self.practical_lesson.instructor = baker.make(Instructor, birth_date=date(2000, 1, 1))
         self.practical_lesson.save()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 302)
@@ -340,11 +340,11 @@ class EditPracticalLessonViewTest(TestCase):
         
 class CreatePracticalLessonView(TestCase):
     def setUp(self):
-        self.student = baker.make(Student)
+        self.student = baker.make(Student, birth_date=date(2000, 1, 1))
         self.category = baker.make(Category, required_practical_hours=10)
         self.course = baker.make(Course, category=self.category, student=self.student)
         self.url = "/practical/create/"
-        self.instructor = baker.make(Instructor)
+        self.instructor = baker.make(Instructor, birth_date=date(2000, 1, 1))
         self.qualification = baker.make(Qualification, instructor=self.instructor, category=self.category)
         self.user = baker.make(CustomUser, instructor=self.instructor, permissions_type='I')
         self.client.force_login(self.user)
@@ -388,8 +388,8 @@ class CreatePracticalLessonView(TestCase):
 
 class CreateCourseView(TestCase):
     def setUp(self):
-        self.student = baker.make(Student)
-        self.instructor = baker.make(Instructor)
+        self.student = baker.make(Student, birth_date=date(2000, 1, 1))
+        self.instructor = baker.make(Instructor, birth_date=date(2000, 1, 1))
         self.category = baker.make(Category, required_practical_hours=10)
         self.url = "/courses/create/"
         self.user = baker.make(CustomUser, student=self.student, permissions_type='E')
@@ -443,8 +443,8 @@ class CreateCourseView(TestCase):
 
 class EditCourseView(TestCase):
     def setUp(self):
-        self.student = baker.make(Student)
-        self.instructor = baker.make(Instructor)
+        self.student = baker.make(Student, birth_date=date(2000, 1, 1))
+        self.instructor = baker.make(Instructor, birth_date=date(2000, 1, 1))
         self.category = baker.make(Category, required_practical_hours=10)
         self.course = baker.make(Course, category=self.category, student=self.student)
         self.url = "/courses/edit/1/"
